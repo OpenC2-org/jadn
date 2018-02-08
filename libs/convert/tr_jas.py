@@ -4,26 +4,13 @@ Translate JADN to and from JAS (JADN Abstract Syntax)
 
 import re
 from .jas_parse import jasParser
+from ..codec.jadn_defs import *
 from ..codec.codec import is_primitive
 from ..codec.codec_utils import opts_s2d, opts_d2s
 from copy import deepcopy
 from datetime import datetime
 from textwrap import fill
 
-# JADN Type Definition columns (MUST remain in sync with codec).
-TNAME = 0       # Datatype name
-TTYPE = 1       # Base type
-TOPTS = 2       # Type options
-TDESC = 3       # Type description
-FIELDS = 4      # List of fields
-
-# JADN Field Definition columns
-TAG = 0         # Element ID
-NAME = 1        # Element name
-EDESC = 2       # Description (for enumerated types)
-FTYPE = 2       # Datatype of field
-FOPTS = 3       # Field options
-FDESC = 4       # Field Description
 
 class Jastype:
 

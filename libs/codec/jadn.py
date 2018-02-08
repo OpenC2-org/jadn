@@ -7,6 +7,7 @@ import jsonschema
 from datetime import datetime
 from .codec import is_builtin, is_primitive
 from .codec_utils import opts_s2d
+from .jadn_defs import *
 
 # TODO: Establish CTI/JSON namespace conventions, merge "module" (name) and "namespace" (module unique id) properties
 # TODO: convert prints to ValidationError exception
@@ -76,21 +77,6 @@ jadn_schema = {
         }
     }
 }
-
-# JADN Type Definition columns      # MUST remain in sync with codec
-TNAME = 0       # Datatype name
-TTYPE = 1       # Base type
-TOPTS = 2       # Type options
-TDESC = 3       # Type description
-FIELDS = 4      # List of fields
-
-# JADN Field Definition columns
-FTAG = 0        # Element ID
-FNAME = 1       # Element name
-EDESC = 2       # Description (for enumerated types)
-FTYPE = 2       # Datatype of field
-FOPTS = 3       # Field options
-FDESC = 4       # Field Description
 
 
 def jadn_check(schema):

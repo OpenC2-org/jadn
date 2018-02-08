@@ -11,16 +11,19 @@ def _set_col_widths(sheet, col, widths):
     for n, w in enumerate(widths):
         sheet.set_column(col+n, col+n, w)
 
+
 def _write_type(sheet, row, col, ncols, tname, tval, fmt):
     sheet.write(row, col, tname, fmt[0])
     sheet.merge_range(row, col + 1, row, col + ncols, tval, fmt[1])
     return 1
 
-def _write_row(sheet, row, col, values, format):
-    for n, v in enumerate(values):
-        sheet.write(row, col + n, v, format)
 
-def _write_field(sheet, row, col, f, fmt, tname = "", btype = ""):
+def _write_row(sheet, row, col, values, fmt):
+    for n, v in enumerate(values):
+        sheet.write(row, col + n, v, fmt)
+
+
+def _write_field(sheet, row, col, f, fmt, tname="", btype=""):
     req = ""
     if tname in ["Record", "Map"]:
         opts = opts_s2d(f[3])
@@ -32,6 +35,7 @@ def _write_field(sheet, row, col, f, fmt, tname = "", btype = ""):
     if len(f) > 4:
         sheet.write(row, col + 3, f[4], fmt)
     return 1
+
 
 def table_dump(schema, fname, source=""):
     wkbook = xlsxwriter.Workbook(fname)
@@ -76,7 +80,7 @@ def table_dump(schema, fname, source=""):
     _set_col_widths(sheet_vocab, 0, [12, 4, 20, 70])
     fmt = [tdname, tdval]
     fmt1 = [tdname, tdval1]
-    symtab = {t[0]:t[1] for t in schema["types"]}
+    symtab = {t[0]: t[1] for t in schema["types"]}
     for n, t in enumerate(schema["types"]):   # 0: type name, 1: base type, 2:opts, 3: desc, 4:fields
         if t[1] == "Enumerated":
             vrow += _write_type(sheet_vocab, vrow, 0, 3, "Vocabulary:", t[0], fmt1)
@@ -95,7 +99,7 @@ def table_dump(schema, fname, source=""):
             if t[2]:
                 opts = opts_s2d(t[2])
                 del(opts["optional"])
-                optsd = ", ".join([k + ': "' + v + '"' for k,v in opts.items()])
+                optsd = ", ".join([k + ': "' + v + '"' for k, v in opts.items()])
                 trow += _write_type(sheet_types, trow, 0, 4, "Options:", optsd, fmt)
             if t[3]:
                 trow += _write_type(sheet_types, trow, 0, 4, "Description:", t[3], fmt)

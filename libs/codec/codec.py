@@ -13,27 +13,13 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 from __future__ import unicode_literals
 import base64
+from .jadn_defs import *
 from .codec_utils import opts_s2d
 
 __version__ = "0.2"
 
 # TODO: add DEFAULT
 # TODO: use CHOICE with both explicit (attribute) and implicit (wildcard field) type
-
-# JADN Type Definition columns
-TNAME = 0       # Datatype name
-TTYPE = 1       # Base type
-TOPTS = 2       # Type options
-TDESC = 3       # Type description
-FIELDS = 4      # List of fields
-
-# JADN Field Definition columns
-FTAG = 0        # Element ID
-FNAME = 1       # Element name
-EDESC = 2       # Description (for enumerated types)
-FTYPE = 2       # Datatype of field
-FOPTS = 3       # Field options
-FDESC = 4       # Field Description
 
 # Codec Table fields
 C_DEC = 0       # Decode function
