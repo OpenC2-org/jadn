@@ -63,6 +63,7 @@ class Codec:
         self.schema = schema
         self.symtab = {}
         self.set_mode(verbose_rec, verbose_str)
+        assert set(enctab) == set(PRIMITIVE_TYPES + STRUCTURE_TYPES)
 
     def decode(self, datatype, mstr):
         try:
@@ -351,11 +352,11 @@ def _encode_string(ts, val, codec):
 
 
 def is_primitive(vtype):
-    return vtype in ["ArrayOf", "Binary", "Boolean", "Integer", "Number", "String"]
+    return vtype in PRIMITIVE_TYPES
 
 
 def is_builtin(vtype):
-    return vtype in enctab
+    return vtype in PRIMITIVE_TYPES + STRUCTURE_TYPES
 
 
 enctab = {  # decode, encode, min encoded type
