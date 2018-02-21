@@ -2,6 +2,8 @@
 Load, validate, prettyprint, and dump JSON Abstract Encoding Notation (JADN) schemas
 """
 
+from __future__ import print_function
+
 import json
 import jsonschema
 from datetime import datetime
@@ -137,8 +139,8 @@ def jadn_analyze(schema):
     types = {i[0] for i in items}
     refs = set().union(*[i[1] for i in items])
     print("  module:", schema["meta"]["module"])
-    print("  unreferenced:", types - refs)
-    print("  undefined:", refs - types)
+    print("  unreferenced:", [str(k) for k in types - refs])
+    print("  undefined:", [str(k) for k in refs - types])
     print("  cycles:", [])
 
 
@@ -176,7 +178,7 @@ def jadn_dumps(schema, level=0, indent=1):
         if nest:
             return "[\n" + sep.join(vals) + "]\n"
         return "[" + ", ".join(vals) + sp4 + "]"
-    elif isinstance(schema, (bool, int, str)):
+    elif isinstance(schema, (bool, int, str, unicode)):
         return json.dumps(schema)
     return "???"
 
