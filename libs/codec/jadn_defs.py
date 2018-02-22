@@ -31,7 +31,6 @@ FDESC = 4       # Field Description
 # JADN built-in datatypes
 
 PRIMITIVE_TYPES = (
-    'ArrayOf',      # Special case: instance is a structure but type definition has no fields
     'Binary',
     'Boolean',
     'Integer',
@@ -41,6 +40,7 @@ PRIMITIVE_TYPES = (
 
 STRUCTURE_TYPES = (
     'Array',
+    'ArrayOf',  # Special case: instance is a structure but type definition has no fields
     'Choice',
     'Enumerated',
     'Map',
