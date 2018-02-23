@@ -4,7 +4,7 @@ Translate JADN to Markdown property tables
 
 from __future__ import unicode_literals
 from ..codec.jadn_defs import *
-from ..codec.codec_utils import opts_s2d
+from ..codec.codec_utils import topts_s2d, fopts_s2d
 from datetime import datetime
 
 
@@ -43,7 +43,7 @@ def markdown_dumps(jadn):
         if td[TTYPE] == 'Enumerated':
             mdown += '### 3.3.' + str(n) + ' ' + td[TNAME] + '\n'
             mdown += td[TDESC] + '\n\n'
-            mdown += '|ID|Name|Description\n'
+            mdown += '|ID|Name|Description|\n'
             mdown += '|---|---|---|\n'
             for fd in td[FIELDS]:
                 mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[EDESC] + '|\n'
@@ -59,12 +59,19 @@ def markdown_dumps(jadn):
             mdown += '|**ID**|**Name**|**Type**|**#**|**Description**|\n'
             for fd in td[FIELDS]:
                 mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
-                mdown += '|' + ('0..1' if opts_s2d(fd[FOPTS])['optional'] else '1')
+                mdown += '|' + ('0..1' if fopts_s2d(fd[FOPTS])['optional'] else '1')
                 mdown += '|' + fd[FDESC] + '|\n'
             n += 1
         elif td[TTYPE] == 'Choice':
+            mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
+            mdown += td[TDESC] + '\n\n'
+            mdown += '(choice table)\n'
+            #same as above but without # column
             n += 1
         elif td[TTYPE] == 'ArraryOf':
+            mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
+            mdown += td[TDESC] + '\n\n'
+            mdown += '(arrayof definition)\n'
             n += 1
 
     return mdown

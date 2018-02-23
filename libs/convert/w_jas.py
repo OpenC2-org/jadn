@@ -3,7 +3,7 @@ Translate JADN to JAS (JADN Abstract Syntax)
 """
 
 from ..codec.jadn_defs import *
-from ..codec.codec_utils import opts_s2d
+from ..codec.codec_utils import topts_s2d, fopts_s2d
 from copy import deepcopy
 from datetime import datetime
 from textwrap import fill
@@ -55,7 +55,7 @@ def jas_dumps(jadn):
     assert set(stype_map) == set(PRIMITIVE_TYPES + STRUCTURE_TYPES)         # Ensure type list is up to date
     for td in jadn["types"]:                    # 0:type name, 1:base type, 2:type opts, 3:type desc, 4:fields
         tname, ttype = td[TNAME:TTYPE+1]
-        topts = opts_s2d(td[TOPTS])
+        topts = topts_s2d(td[TOPTS])
         if "pattern" in topts:
             tostr = '(PATTERN "' + topts["pattern"] + '")'
         elif "aetype" in topts:
@@ -86,7 +86,7 @@ def jas_dumps(jadn):
                 items = []
                 for n, i in enumerate(titems):
                     ostr = ""
-                    opts = opts_s2d(i[FOPTS])
+                    opts = fopts_s2d(i[FOPTS])
                     if len(opts) > 1:
                         pass        # debugging multiple opts
                     if "atfield" in opts:

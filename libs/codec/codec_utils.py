@@ -5,6 +5,7 @@ Support functions for JADN codec
 """
 
 from functools import reduce
+from jadn_defs import *
 
 
 # Dict conversion utilities
@@ -70,37 +71,52 @@ def dlist(src):
 
 # Option conversions
 
-def opts_s2d(ostr):
+def topts_s2d(ostr):
     """
     Convert list of type definition option strings to options dictionary
-
-    String   Dict key   Dict val  Option
-    ------   --------   -------  ------------
-    "?"      "optional" Boolean  Field is optional
-    "{key"   "atfield"  String   Name of the field containing Attribute type
-    "[n:m"   "range"    Tuple    Min and max lengths for arrays and strings
-    ">*"     "pattern"  String   Regular expression to match against String value
-    "@*"     "format"   String   Validation function (date-time, email, hostname, ipv4, ipv6, uri, json, ...)
-    "#*"     "aetype"   String   Array element type
     """
 
+    tval = {
+        "aetype": lambda x: x,
+        "pattern": lambda x: x,
+        "format": lambda x: x,
+        "min": lambda x: int(x),
+        "max": lambda x: int(x),
+        "etag": lambda x: 1
+    }
+
     assert isinstance(ostr, (list, tuple)), "%r is not a list" % ostr
-    opts = {"optional": False}
+    opts = {"etag": False, "min": 1, "max": 1}
     for o in ostr:
-        if o[0] == "?":
-            opts["optional"] = True
-        elif o[0] == "{":
-            opts["atfield"] = o[1:]
-        elif o[0] == "[":
-            opts["range"] = (0, 0)      # TODO: parse min and max
-        elif o[0] == ">":
-            opts["pattern"] = o[1:]
-        elif o[0] == "@":
-            opts["format"] = o[1:]
-        elif o[0] == "#":
-            opts["aetype"] = o[1:]
-        else:
-            print("Unknown option '", o, "'")
+        try:
+            k = TYPE_OPTIONS[ord(o[0])]
+            opts[k] = tval[k](o[1:])
+        except KeyError:
+            print('Unknown type option: ' + o)
+    return opts
+
+def fopts_s2d(ostr):
+    """
+    Convert list of field definition option strings to options dictionary
+    """
+
+    fval = {
+        "optional": lambda x: 1,
+        "min": lambda x: int(x),
+        "max": lambda x: int(x),
+        "atfield": lambda x: x,
+        "etype": lambda x: x,
+        "default": lambda x: x
+    }
+
+    assert isinstance(ostr, (list, tuple)), "%r is not a list" % ostr
+    opts = {"optional": False, "min": 1, "max": 1}
+    for o in ostr:
+        try:
+            k = FIELD_OPTIONS[ord(o[0])]
+            opts[k] = fval[k](o[1:])
+        except KeyError:
+            print('Unknown field option: ' + o)
     return opts
 
 

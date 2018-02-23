@@ -14,7 +14,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 from __future__ import unicode_literals
 import base64
 from .jadn_defs import *
-from .codec_utils import opts_s2d
+from .codec_utils import topts_s2d, fopts_s2d
 
 __version__ = "0.2"
 
@@ -83,7 +83,7 @@ class Codec:
         def symf(fld):               # Field entries
             fs = [
                 fld,                 # S_FDEF: JADN field definition
-                opts_s2d(fld[FOPTS]) if len(fld) > FOPTS else None,  # S_FOPT: Field options (dict)
+                fopts_s2d(fld[FOPTS]) if len(fld) > FOPTS else None,  # S_FOPT: Field options (dict)
                 []                  # S_FNAMES: Possible field names returned from Choice type
             ]
             return fs
@@ -93,7 +93,7 @@ class Codec:
                 t,                          # 0: S_TDEF:  JADN type definition
                 enctab[t[TTYPE]],           # 1: S_CODEC: Decoder, Encoder, Encoded type
                 int,                        # 2: S_STYPE: Encoded string type (str or tag)
-                opts_s2d(t[TOPTS]),         # 3: S_TOPT:  Type Options (dict)
+                topts_s2d(t[TOPTS]),        # 3: S_TOPT:  Type Options (dict)
                 False,                      # 4: S_VSTR:  Verbose String Identifiers
                 {},                         # 5: S_FLD/S_DMAP: Field list / Enum Val to Name
                 {}                          # 6: S_EMAP:  Enum Name to Val

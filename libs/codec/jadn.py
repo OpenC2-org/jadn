@@ -8,7 +8,7 @@ import json
 import jsonschema
 from datetime import datetime
 from .codec import is_builtin, is_primitive
-from .codec_utils import opts_s2d
+from .codec_utils import topts_s2d, fopts_s2d
 from .jadn_defs import *
 
 # TODO: Establish CTI/JSON namespace conventions, merge "module" (name) and "namespace" (module unique id) properties
@@ -91,13 +91,13 @@ def jadn_check(schema):
     for t in schema["types"]:     # datatype definition: 0-name, 1-type, 2-options, 3-description, 4-item list
         if not is_builtin(t[TTYPE]):
             print("Type error: Unknown type", t[TTYPE], "(" + t[TNAME] + ")")       # TODO: handle if t[TNAME] doesn't exist
-        if is_primitive(t[TTYPE]):
+        if is_primitive(t[TTYPE]) or t[TTYPE] == 'ArrayOf':
             if len(t) != 4:    # TODO: trace back to base type
                 print("Type format error:", t[TNAME], "- type", t[TTYPE], "cannot have items")
         else:
             if len(t) != 5:
                 print("Type format error:", t[TNAME], "- missing items from compound type", t[TTYPE])
-        for o, v in opts_s2d(t[2]).items():
+        for o, v in topts_s2d(t[2]).items():
             if o not in ["pattern"] and o == "optional" and v:      # "optional" not present when value = False
                 print("Invalid typedef option:", t[0], o)
         tags = set()
@@ -109,8 +109,8 @@ def jadn_check(schema):
                     print("Item tag error:", t[TTYPE], i[FNAME], i[FTAG], "should be", k + 1)
                 if len(i) != n:
                     print("Item format error:", t[TNAME], t[TTYPE], i[FNAME], "-", len(i), "!=", n)
-                for o in opts_s2d(i[3]) if n > 3 else []:
-                    if o not in ["atfield", "optional", "range"]:
+                for o in fopts_s2d(i[3]) if n > 3 else []:
+                    if o not in ["atfield", "optional", "min", "max", "etag"]:
                         print("Invalid field option:", t[TNAME], i[FNAME], o)
 # TODO: add check that wildcard name MUST be Choice type, and that only one wildcard is permitted per map/record.
             if len(t[FIELDS]) != len(tags):
