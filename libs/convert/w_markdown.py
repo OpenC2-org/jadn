@@ -4,7 +4,7 @@ Translate JADN to Markdown property tables
 
 from __future__ import unicode_literals
 from ..codec.jadn_defs import *
-from ..codec.codec_utils import topts_s2d, fopts_s2d
+from ..codec.codec_utils import topts_s2d, fopts_s2d, cardinality
 from datetime import datetime
 
 
@@ -22,7 +22,7 @@ def markdown_dumps(jadn):
     if 'title' in hdrs:
         mdown += '# ' + hdrs['title'] + '\n'
     if 'module' in hdrs:
-        mdown += '## ' + hdrs['module']
+        mdown += '## Module ' + hdrs['module']
         if 'version' in hdrs:
             mdown += ', version ' + hdrs['version']
         mdown += '\n'
@@ -36,17 +36,28 @@ def markdown_dumps(jadn):
     mdown += '|---|---|---|\n'
     for td in jadn["types"]:                    # 0:type name, 1:base type, 2:type opts, 3:type desc, 4:fields
         if td[TTYPE] in PRIMITIVE_TYPES:
-            mdown += '|' + td[TNAME] + '|' + td[TTYPE] + '|' + td[TDESC] + '|\n'
+            to = topts_s2d(td[TOPTS])
+            mdown += '|' + td[TNAME] + '|' + td[TTYPE] + '|' + str(to) + ' # ' + td[TDESC] + '|\n'
     mdown += '## 3.3 Vocabularies\n'
     n = 1
     for td in jadn['types']:
         if td[TTYPE] == 'Enumerated':
             mdown += '### 3.3.' + str(n) + ' ' + td[TNAME] + '\n'
             mdown += td[TDESC] + '\n\n'
-            mdown += '|ID|Name|Description|\n'
-            mdown += '|---|---|---|\n'
-            for fd in td[FIELDS]:
-                mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[EDESC] + '|\n'
+            to = topts_s2d(td[TOPTS])
+            if {t for t in to} - {'etag',}:
+                mdown += str(to) + '\n\n'      # have a look
+            if 'etag' in topts_s2d(td[TOPTS]):
+                mdown += '|Value|Description|\n'
+                mdown += '|---|---|\n'
+                for fd in td[FIELDS]:
+                    name = fd[FNAME] + ' / ' if fd[FNAME] else ''
+                    mdown += '|' + str(fd[FTAG]) + '|' + name + fd[EDESC] + '|\n'
+            else:
+                mdown += '|ID|Name|Description|\n'
+                mdown += '|---|---|---|\n'
+                for fd in td[FIELDS]:
+                    mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[EDESC] + '|\n'
             n += 1
     n = 1
     mdown += '## 3.4 Structure Types\n'
@@ -54,19 +65,27 @@ def markdown_dumps(jadn):
         if td[TTYPE] in {k for k in STRUCTURE_TYPES} - {'ArrayOf', 'Choice', 'Enumerated'}:
             mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
             mdown += td[TDESC] + '\n\n'
+            to = topts_s2d(td[TOPTS])
+            if to:
+                mdown += str(to) + '\n\n'      # have a look
             mdown += '| |' + td[TTYPE] + '| | | |\n'
             mdown += '|---|---|---|---:|---|\n'
             mdown += '|**ID**|**Name**|**Type**|**#**|**Description**|\n'
             for fd in td[FIELDS]:
                 mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
-                mdown += '|' + ('0..1' if fopts_s2d(fd[FOPTS])['optional'] else '1')
+                fo = fopts_s2d(fd[FOPTS])
+                mdown += '|' + cardinality(fo['min'], fo['max'])
                 mdown += '|' + fd[FDESC] + '|\n'
             n += 1
-        elif td[TTYPE] == 'Choice':
+        elif td[TTYPE] == 'Choice':            #same as above but without cardinality column
             mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
             mdown += td[TDESC] + '\n\n'
-            mdown += '(choice table)\n'
-            #same as above but without # column
+            mdown += '| |' + td[TTYPE] + '| | |\n'
+            mdown += '|---|---|---|---|\n'
+            mdown += '|**ID**|**Name**|**Type**|**Description**|\n'
+            for fd in td[FIELDS]:
+                mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
+                mdown += '|' + fd[FDESC] + '|\n'
             n += 1
         elif td[TTYPE] == 'ArraryOf':
             mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'

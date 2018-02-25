@@ -24,7 +24,7 @@ from libs.convert.w_markdown import markdown_dump
 
 
 if __name__ == "__main__":
-    for fn in ("openc2",):
+    for fn in ("openc2", "openc2-v0.4",):
         ifname = os.path.join("schema", fn)
         ofname = os.path.join("schema_gen", fn)
 

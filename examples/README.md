@@ -1,21 +1,21 @@
 ## OpenC2 Command examples
 
 This folder contains example OpenC2 commands in two Application Programming Interface (API) formats
-and three JSON-based message formats.  **API** values are the structured data objects used by a program, e.g.,
-Dictionary and List values for Python applications, Map/WeakMap and Array values for Javascript
-applications, or Hash and Array values for Ruby applications.  **Message** values are data objects
-that have been serialized (encoded) for transmission between applications or for storage.  The current examples
-use JSON serializations, but XML and binary serializations are also possible.  These messages
-are encoding alternatives derived from the same abstract syntax; they are not alternative syntax
-specifications requiring separate development and maintenance.
+and three JSON-based message formats.  **API** values are the data values used in programs. For example,
+Python programs have List and Dictionary types, Javascript has Array and Map/WeakMap types, and Ruby
+has Array and Hash types.  For languages such as C++ that have no built-in Map type, libraries such as
+*Boost.PropertyTree* (http://www.boost.org/doc/libs/1_66_0/doc/html/property_tree.html) can
+be used to support key:value data objects.  **Message** values are program data values that have been serialized (encoded)
+for transmission between applications or for storage.  These examples use JSON serialization, but many
+other serializations, including XML, Protobuf, Thrift, CBOR, and Boost INFO format are possible.
+A JADN schema defines datatypes independently of both programming language API and message serialization format.
 
-**API and JSON-verbose:** Structured data object as used by a Python application, and the direct JSON
+**API and JSON:** Structured data object as used by a Python application, and the direct JSON
 serialization of that object as produced by `json.dump`.  Python literal notation is similar but
 not identical to JSON, so the JSON examples shown here would need to be slightly edited for use
 as Python literals if they contain boolean or null values.
 
-**API Flat:** Some developers may find it more convenient to work with flattened data values, e.g.
-a dictionary containing only primitive data values instead of a dictionary containing nested complex data.
+**API Flat:** Sometimes it is more convenient to work with a flat object rather than nested objects.
 The JADN package includes routines `flatten` and `fluff` to convert between structured and flat Python API values.
 
 **JSON-concise:** A message format shown primarily to illustrate how positional encoding eliminates

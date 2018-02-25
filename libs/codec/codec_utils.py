@@ -5,8 +5,7 @@ Support functions for JADN codec
 """
 
 from functools import reduce
-from jadn_defs import *
-
+from .jadn_defs import *
 
 # Dict conversion utilities
 
@@ -77,22 +76,22 @@ def topts_s2d(ostr):
     """
 
     tval = {
+        "etag": lambda x: True,
+        "min": lambda x: int(x),
+        "max": lambda x: int(x),
         "aetype": lambda x: x,
         "pattern": lambda x: x,
         "format": lambda x: x,
-        "min": lambda x: int(x),
-        "max": lambda x: int(x),
-        "etag": lambda x: 1
     }
 
     assert isinstance(ostr, (list, tuple)), "%r is not a list" % ostr
-    opts = {"etag": False, "min": 1, "max": 1}
+    opts = {}
     for o in ostr:
         try:
             k = TYPE_OPTIONS[ord(o[0])]
             opts[k] = tval[k](o[1:])
         except KeyError:
-            print('Unknown type option: ' + o)
+            raise ValueError('Unknown type option: %s' % o)
     return opts
 
 def fopts_s2d(ostr):
@@ -101,7 +100,6 @@ def fopts_s2d(ostr):
     """
 
     fval = {
-        "optional": lambda x: 1,
         "min": lambda x: int(x),
         "max": lambda x: int(x),
         "atfield": lambda x: x,
@@ -110,17 +108,21 @@ def fopts_s2d(ostr):
     }
 
     assert isinstance(ostr, (list, tuple)), "%r is not a list" % ostr
-    opts = {"optional": False, "min": 1, "max": 1}
+    opts = {"min": 1, "max": 1}
     for o in ostr:
         try:
             k = FIELD_OPTIONS[ord(o[0])]
             opts[k] = fval[k](o[1:])
         except KeyError:
-            print('Unknown field option: ' + o)
+            raise ValueError('Unknown field option: %s' % o)
     return opts
 
+def cardinality(min, max):
+    if min == 1 and max == 1:
+        return '1'
+    return str(min) + '..' + ('n' if max == 0 else str(max))
 
-def opts_d2s(opts):
+def opts_d2s(opts):     # TODO: Refactor to use TYPE_OPTIONS / FIELD_OPTIONS as above
     """
     Convert options dictionary to list of option strings
     """

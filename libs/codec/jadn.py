@@ -178,7 +178,7 @@ def jadn_dumps(schema, level=0, indent=1):
         if nest:
             return "[\n" + sep.join(vals) + "]\n"
         return "[" + ", ".join(vals) + sp4 + "]"
-    elif isinstance(schema, (bool, int, str, unicode)):
+    elif isinstance(schema, (bool, int, type(""))):
         return json.dumps(schema)
     return "???"
 

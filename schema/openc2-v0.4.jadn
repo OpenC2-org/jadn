@@ -8,7 +8,7 @@
   "namespace": "http://openc2.org/openc2",
   "root": "OpenC2Object",
   "title": "OpenC2 Command Definitions",
-  "version": "0.3"
+  "version": "0.4"
  },
 
  "types": [
@@ -78,23 +78,12 @@
     [2, "openc2", "openc2", [], "OpenC2 - query actuator for supported capabilities, negotiate connection"],
     [3, "device", "device", [], "CybOX 2.1"],
     [4, "directory", "directory", [], "SCO v2"],
-    [5, "disk", "disk", [], "CybOX 2.1"],
-    [6, "disk_partition", "disk-partition", [], "CybOX 2.1"],
     [7, "domain_name", "domain-name", [], "SCO v2"],
-    [8, "email_addr", "email-addr", [], "SCO v2"],
-    [9, "email_message", "email-message", [], "SCO v2"],
-    [10, "file", "file", [], "SCO v2"],
     [11, "ipv4_addr", "ipv4-addr", [], "SCO v2"],
     [12, "ipv6_addr", "ipv6-addr", [], "SCO v2"],
     [13, "mac_addr", "mac-addr", [], "SCO v2"],
-    [14, "memory", "memory", [], "CybOX 2.1"],
     [15, "ip_connection", "ip-connection", [], "OpenC2"],
-    [16, "process", "process", [], "SCO v2"],
-    [17, "software", "software", [], "SCO v2"],
-    [18, "url", "url", [], "SCO v2"],
-    [19, "user_account", "user-account", [], "SCO v2"],
-    [20, "user_session", "user-session", [], "CybOX 2.1"],
-    [21, "volume", "volume", [], "CybOX 2.1"]]
+    [18, "url", "url", [], "SCO v2"]]
   ],
 
   ["Actuator", "Choice", [], "", [
@@ -223,28 +212,6 @@
     [14, "WHIRLPOOL", "Binary", ["[0"], "whirlpool cryptographic hash function as defined in ISO/IEC 10118-3:2004"]]
   ],
 
-  ["encryption-algo", "Enumerated", [], "Replace with an IANA algorithm registry?  Which one?", [
-    [1, "AES128-ECB", "Advanced Encryption Standard (AES) with Electronic Codebook (ECB) mode, NIST SP 800-38A"],
-    [2, "AES128-CBC", "AES with Cipher Block Chaining (CBC) mode, NIST SP 800-38A"],
-    [3, "AES128-CFB", "AES with Cipher Feedback (CFB) mode, NIST SP 800-38A"],
-    [4, "AES128-OFB", "AES with Output Feedback (OFB) mode, NIST SP 800-38A"],
-    [5, "AES128-CTR", "AES with Counter (CTR) mode, NIST SP 800-38A"],
-    [6, "AES128-XTS", "AES with XEX Tweakable Block Cipher with Ciphertext Stealing (XTS) mode, NIST SP 800-38E"],
-    [7, "AES128-GCM", "AES with Galois Counter (GCM) mode, NIST SP 800-38D"],
-    [8, "Salsa20", "Salsa20 stream cipher"],
-    [9, "Salsa12", "Salsa20/12 stream cipher"],
-    [10, "ChaCha20-Poly1305", "ChaCha20-Poly1305 stream cipher, RFC 7539"],
-    [11, "ChaCha20", "ChaCha20 stream cipher without poly1305 authentication, RFC 7539"],
-    [12, "DES-CBC", "Data Encryption Standard (DES) with CBC mode, NIST FIPS Pub 81"],
-    [13, "3DES-CBC", "Triple DES (3DES) with CBC mode"],
-    [14, "DES-ECB", "DES with ECB mode, NIST FIPS Pub 81"],
-    [15, "3DES-ECB", "3DES with ECB mode"],
-    [16, "CAST128-CBC", "CAST-128 algorithm with CBC mode, RFC 2144"],
-    [17, "CAST256-CBC", "CAST-256 algorithm with CBC mode, RFC 2612"],
-    [18, "RSA", "RSA asymmetric encryption algorithm, RFC 2313"],
-    [19, "DSA", "Digital Signature Algorithm, NIST FIPS Pub 186-4 (*not an encryption algorithm)"]]
-  ],
-
   ["artifact", "Record", [], "", [
     [1, "mime_type", "String", ["[0"], "MUST be a valid MIME type as specified in the IANA Media Types registry"],
     [2, "*", "payload", ["[0"], "choice of literal content or URL to obtain content"],
@@ -252,7 +219,7 @@
   ],
 
   ["payload", "Choice", [], "", [
-    [1, "payload_bin", "Binary", [], "Specifies the binary data contained in the artifact."],
+    [1, "payload_bin", "Binary", [], "Specifies the data contained in the artifact."],
     [2, "url", "String", [], "MUST be a valid URL that resolves to the un-encoded content"]]
   ],
 
@@ -266,97 +233,7 @@
     [7, "system_details", "String", ["[0"], ""]]
   ],
 
-  ["directory", "Map", [], "", [
-    [1, "path", "String", [], "Path, as originally observed, to the directory on the filesystem"],
-    [2, "path_enc", "String", ["[0"], "Observed encoding for the path, from the IANA Character Set Registry"],
-    [3, "created", "date-time", ["[0"], "Date/time the directory was created"],
-    [4, "modified", "date-time", ["[0"], "Date/time the directory was last written-to/modified"],
-    [5, "accessed", "date-time", ["[0"], "Date/time the directory was last accessed"],
-    [6, "contains", "dir-contents", ["[0"], "List of files/directories contained within the directory"]]
-  ],
-
-  ["dir-contents", "ArrayOf", ["#dirfile"], ""],
-
-  ["dirfile", "Choice", [], "", [
-    [1, "d", "directory", [], ""],
-    [2, "f", "file", [], ""]]
-  ],
-
-  ["disk", "Map", [], "CybOX 2.1   TODO: Finish", []],
-
-  ["disk-partition", "Map", [], "CybOX 2.1    TODO: Finish", []],
-
   ["domain-name", "String", [], "Value of the domain name"],
-
-  ["email-addr", "Record", [], "", [
-    [1, "value", "String", [], "Email address (addr-spec in RFC 5322 Section 3.4)"],
-    [2, "display_name", "String", ["[0"], "Name that is displayed to the user of a mail application"],
-    [3, "belongs_to", "user-account", ["[0"], "User account that the email address belongs to"]]
-  ],
-
-  ["email-addrs", "ArrayOf", ["#email-addr"], ""],
-
-  ["headers", "ArrayOf", ["#String"], ""],
-
-  ["mime-part-type", "Map", [], "TODO: Finish", []],
-
-  ["mime-part-types", "ArrayOf", ["#mime-part-type"], ""],
-
-  ["email-message", "Map", [], "", [
-    [1, "is_multipart", "Boolean", ["[0"], "Indicates whether the email body contains multiple MIME parts"],
-    [2, "date", "date-time", ["[0"], "specifies the date/time that the email message was sent"],
-    [3, "content_type", "String", ["[0"], "Value of the Content-Type: header"],
-    [4, "from", "email-addr", ["[0"], "Value of the From: header"],
-    [5, "sender", "email-addr", ["[0"], "Value of the Sender: header"],
-    [6, "to", "email-addrs", ["[0"], "Values of the To: recipients"],
-    [7, "cc", "email-addrs", ["[0"], "Values of the CC: recipients"],
-    [8, "bcc", "email-addrs", ["[0"], "Values of the BCC: recipients"],
-    [9, "subject", "String", ["[0"], "Value of the Subject: header"],
-    [10, "received_lines", "String", ["[0", "]0"], "Value of Received: header fields in the order present in the email"],
-    [11, "additional_headers", "headers", ["[0"], "header fields other than those listed above"],
-    [12, "body", "String", ["[0"], "Body of the email. Used only if is_multipart is False."],
-    [13, "body_multipart", "mime-part-types", ["[0"], "List of MIME parts. Used only if is_multipart is True."],
-    [14, "raw_email", "artifact", ["[0"], "Raw binary contents of the email including headers and body"]]
-  ],
-
-  ["file", "Map", [], "", [
-    [1, "extensions", "file-extensions", ["[0"], "Content-specific file information"],
-    [2, "hashes", "hashes-type", ["[0"], "Dictionary of hashes for the file"],
-    [3, "size", "Integer", ["[0"], "Size of the file, in bytes."],
-    [4, "name", "String", ["[0"], "Name of the file."],
-    [5, "name_enc", "String", ["[0"], "Observed encoding of the file, from IANA Character Set Registry"],
-    [6, "magic_number_hex", "Hex", ["[0"], "Hexadecimal constant associated with a specific file format."],
-    [7, "mime_type", "String", ["[0"], "MIMI type name for the file, from the IANA media type registry."],
-    [8, "created", "date-time", ["[0"], "Date/time the file was created."],
-    [9, "modified", "date-time", ["[0"], "Date/time the file was last written to / modified."],
-    [10, "accessed", "date-time", ["[0"], "Date/time the file was last accessed."],
-    [11, "parent_directory", "directory", ["[0"], "Parent directory of the file."],
-    [12, "is_encrypted", "Boolean", ["[0"], "Specifies whether the file is encrypted."],
-    [13, "encryption_algorithm", "encryption-algo", ["[0"], "Specifies the algorithm used to encrypt the file."],
-    [14, "decryption_key", "String", ["[0"], "Decryption key used to decrypt the file."],
-    [15, "contains", "file-contents", ["[0"], "List of observables contained within the file"],
-    [16, "content", "artifact", ["[0"], "Content of the file."]]
-  ],
-
-  ["file-contents", "ArrayOf", ["#Target"], ""],
-
-  ["file-extensions", "Map", [], "", [
-    [1, "ntfs_ext", "ntfs-ext", ["[0"], ""],
-    [2, "raster_image_ext", "raster-image-ext", ["[0"], ""],
-    [3, "pdf_ext", "pdf-ext", ["[0"], ""],
-    [4, "archive_ext", "archive-ext", ["[0"], ""],
-    [5, "windows_pebinary_ext", "windows-pebinary-ext", ["[0"], ""]]
-  ],
-
-  ["ntfs-ext", "Map", [], "TODO", []],
-
-  ["raster-image-ext", "Map", [], "TODO", []],
-
-  ["pdf-ext", "Map", [], "TODO", []],
-
-  ["archive-ext", "Map", [], "TODO", []],
-
-  ["windows-pebinary-ext", "Map", [], "TODO", []],
 
   ["ip-addr", "Choice", [], "", [
     [1, "ipv4", "ipv4-addr", [], ""],
@@ -395,101 +272,7 @@
     [17, "UDP", "User Datagram Protocol - RFC 768"]]
   ],
 
-  ["layer7-protocol", "Enumerated", [], "Service Name and Transport Protocol Port - any IANA value, RFC 6335", [
-    [20, "ftp-data", "File Transfer Protocol (data)"],
-    [21, "ftp", "File Transfer Protocol (control)"],
-    [22, "ssh", "Secure Shell Protocol"],
-    [23, "telnet", "Telnet"],
-    [25, "smtp", "Simple Mail Transfer Protocol"],
-    [80, "http", "Hypertext Transport Protocol"],
-    [443, "https", "HTTP over TLS"]]
-  ],
-
-  ["memory", "Map", [], "CybOX 2.1", []],
-
-  ["process", "Map", [], "", [
-    [1, "extensions", "process-ext", ["[0"], "Process-type specific info"],
-    [2, "is_hidden", "Boolean", ["[0"], "Whether the process is hidden"],
-    [3, "pid", "Integer", ["[0"], "Process ID of the process"],
-    [4, "name", "String", ["[0"], "Name of the process"],
-    [5, "created", "date-time", ["[0"], "Date/time at which the process was created"],
-    [6, "cwd", "String", ["[0"], "Current working directory of the process"],
-    [7, "arguments", "arguments", ["[0"], "List of arguments used in executing the process"],
-    [8, "environment_variables", "envars", ["[0"], "List of environment variables associated with the process"],
-    [9, "opened_connections", "opened-connections", ["[0"], "List of network connections opened by the process"],
-    [10, "creator_user", "user-account", ["[0"], "User that created the process"],
-    [11, "binary", "file", ["[0"], "Executable binary that was executed as the process"],
-    [12, "parent", "process", ["[0"], "Process that spawned this one"],
-    [13, "children", "process-children", ["[0"], "Processes that were spawned by this one"]]
-  ],
-
-  ["arguments", "ArrayOf", ["#String"], ""],
-
-  ["envars", "ArrayOf", ["#String"], "Test JAS conversion bad type detection"],
-
-  ["opened-connections", "ArrayOf", ["#String"], ""],
-
-  ["process-ext", "Map", [], "", [
-    [1, "windows_process_ext", "windows-process-ext", ["[0"], ""],
-    [2, "windows_service_ext", "windows-service-ext", ["[0"], ""]]
-  ],
-
-  ["process-children", "ArrayOf", ["#process"], ""],
-
-  ["windows-process-ext", "Map", [], "TODO", []],
-
-  ["windows-service-ext", "Map", [], "TODO", []],
-
-  ["software", "Record", [], "", [
-    [1, "name", "String", [], "Name of the software"],
-    [2, "cpe", "String", ["[0"], "From Common Platform Enumeration (CPE) v2.3 dictionary"],
-    [3, "language", "String", ["[0"], "Language of the software from ISO 639-2"],
-    [4, "vendor", "String", ["[0"], "Vendor of the software"],
-    [5, "version", "String", ["[0"], "Version of the software"]]
-  ],
-
   ["url", "String", [], "Uniform Resource Locator"],
-
-  ["user-account", "Map", [], "", [
-    [1, "user_id", "String", [], "Identifier of the account.  Format depends on the system the account is maintained in."],
-    [2, "account_login", "String", ["[0"], "Account login string, in cases where user_id is other than what the user types to log in."],
-    [3, "account_type", "account-type", ["[0"], "Value from the account-type vocabulary"],
-    [4, "display_name", "String", ["[0"], "Display name of the account (e.g., Unix GECOS field)"],
-    [5, "is_service_account", "Boolean", ["[0"], "Account is associated with a network service or system process, not an individual."],
-    [6, "is_privileged", "Boolean", ["[0"], "Account has elevated privileges"],
-    [7, "can_escalate_privs", "Boolean", ["[0"], "Account has the ability to escalate privileges"],
-    [8, "is_disabled", "Boolean", ["[0"], "Account is disabled"],
-    [9, "account_created", "date-time", ["[0"], "Creation date of the account"],
-    [10, "account_expires", "date-time", ["[0"], "Expiration date of the account"],
-    [11, "password_last_changed", "date-time", ["[0"], "When the account password was last changed"],
-    [12, "account_first_login", "date-time", ["[0"], "When the account was first accessed"],
-    [13, "account_last_login", "date-time", ["[0"], "When the account was last accessed"]]
-  ],
-
-  ["account-type", "Enumerated", [], "", [
-    [1, "unix", "POSIX account"],
-    [2, "windows-local", "Windows local account"],
-    [3, "windows-domain", "Windows domain account"],
-    [4, "ldap", "Lightweight Directory Access Protocol (LDAP) account"],
-    [5, "tacacs", "Terminal Access Controller Access Control System (TACACS) account"],
-    [6, "radius", "Remote Authentication Dial-in User Service (RADIUS - RFC 2865) account"],
-    [7, "nis", "Network Information System (NIS) account"],
-    [8, "openid", "OpenID account"],
-    [9, "facebook", "Facebook account"],
-    [10, "skype", "Skype account"],
-    [11, "twitter", "Twitter account"]]
-  ],
-
-  ["user-session", "Map", [], "CybOX 2.1", [
-    [1, "effective-group", "String", ["[0"], ""],
-    [2, "effective-group-id", "String", ["[0"], ""],
-    [3, "effective-user", "String", ["[0"], ""],
-    [4, "effective-user-id", "String", ["[0"], ""],
-    [5, "login-time", "date-time", ["[0"], ""],
-    [6, "logout-time", "date-time", ["[0"], ""]]
-  ],
-
-  ["volume", "Map", [], "CybOX 2.1", []],
 
   ["openc2", "Choice", [], "A target used to query Actuator for its supported capabilities", [
     [1, "actions", "Null", [], "query: Results = JSON array of supported action verbs"],

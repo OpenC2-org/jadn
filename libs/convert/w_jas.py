@@ -92,9 +92,9 @@ def jas_dumps(jadn):
                     if "atfield" in opts:
                         ostr += ".&" + opts["atfield"]
                         del opts["atfield"]
-                    if opts["optional"]:
+                    if opts["min"] > 0:         # TODO: handle array fields (max != 1)
                         ostr += " OPTIONAL"
-                    del opts["optional"]
+                    del opts["min"]
                     items += [fmt.format(i[FTAG], i[FNAME], i[FTYPE], ostr, i[5]) + (" ***" + str(opts) if opts else "")]
                 jas += "\n".join(items)
             jas += "\n}\n" if titems else "}\n"
