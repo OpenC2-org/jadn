@@ -31,15 +31,43 @@ def markdown_dumps(jadn):
     if 'namespace' in hdrs:
         mdown += '\nNamespace: ' + hdrs['namespace'] + '\n'
 
-    mdown += '## 3.2 Primitive Types\n'
-    mdown += '|Name|Type|Description|\n'
-    mdown += '|---|---|---|\n'
-    for td in jadn["types"]:                    # 0:type name, 1:base type, 2:type opts, 3:type desc, 4:fields
-        if td[TTYPE] in PRIMITIVE_TYPES:
-            to = topts_s2d(td[TOPTS])
-            mdown += '|' + td[TNAME] + '|' + td[TTYPE] + '|' + str(to) + ' # ' + td[TDESC] + '|\n'
-    mdown += '## 3.3 Vocabularies\n'
     n = 1
+    mdown += '## 3.2 Structure Types\n'
+    for td in jadn['types']:
+        if td[TTYPE] in {k for k in STRUCTURE_TYPES} - {'ArrayOf', 'Choice', 'Enumerated'}:
+            mdown += '### 3.2.' + str(n) + ' ' + td[TNAME] + '\n'
+            mdown += td[TDESC] + '\n\n'
+            to = topts_s2d(td[TOPTS])
+            if to:
+                mdown += str(to) + '\n\n'      # have a look
+            mdown += '| |' + td[TTYPE] + '| | | |\n'
+            mdown += '|---|---|---|---:|---|\n'
+            mdown += '|**ID**|**Name**|**Type**|**#**|**Description**|\n'
+            for fd in td[FIELDS]:
+                mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
+                fo = {'min': 1, 'max':1}
+                fo.update(fopts_s2d(fd[FOPTS]))
+                mdown += '|' + cardinality(fo['min'], fo['max'])
+                mdown += '|' + fd[FDESC] + '|\n'
+            n += 1
+        elif td[TTYPE] == 'Choice':            #same as above but without cardinality column
+            mdown += '### 3.2.' + str(n) + ' ' + td[TNAME] + '\n'
+            mdown += td[TDESC] + '\n\n'
+            mdown += '| |' + td[TTYPE] + '| | |\n'
+            mdown += '|---|---|---|---|\n'
+            mdown += '|**ID**|**Name**|**Type**|**Description**|\n'
+            for fd in td[FIELDS]:
+                mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
+                mdown += '|' + fd[FDESC] + '|\n'
+            n += 1
+        elif td[TTYPE] == 'ArraryOf':
+            mdown += '### 3.2.' + str(n) + ' ' + td[TNAME] + '\n'
+            mdown += td[TDESC] + '\n\n'
+            mdown += '(arrayof definition)\n'
+            n += 1
+
+    n = 1
+    mdown += '## 3.3 Vocabularies\n'
     for td in jadn['types']:
         if td[TTYPE] == 'Enumerated':
             mdown += '### 3.3.' + str(n) + ' ' + td[TNAME] + '\n'
@@ -59,39 +87,16 @@ def markdown_dumps(jadn):
                 for fd in td[FIELDS]:
                     mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[EDESC] + '|\n'
             n += 1
-    n = 1
-    mdown += '## 3.4 Structure Types\n'
-    for td in jadn['types']:
-        if td[TTYPE] in {k for k in STRUCTURE_TYPES} - {'ArrayOf', 'Choice', 'Enumerated'}:
-            mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
-            mdown += td[TDESC] + '\n\n'
+
+    mdown += '## 3.4 Primitive Types\n'
+    mdown += '|Name|Type|Description|\n'
+    mdown += '|---|---|---|\n'
+    for td in jadn["types"]:                    # 0:type name, 1:base type, 2:type opts, 3:type desc, 4:fields
+        if td[TTYPE] in PRIMITIVE_TYPES:
             to = topts_s2d(td[TOPTS])
-            if to:
-                mdown += str(to) + '\n\n'      # have a look
-            mdown += '| |' + td[TTYPE] + '| | | |\n'
-            mdown += '|---|---|---|---:|---|\n'
-            mdown += '|**ID**|**Name**|**Type**|**#**|**Description**|\n'
-            for fd in td[FIELDS]:
-                mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
-                fo = fopts_s2d(fd[FOPTS])
-                mdown += '|' + cardinality(fo['min'], fo['max'])
-                mdown += '|' + fd[FDESC] + '|\n'
-            n += 1
-        elif td[TTYPE] == 'Choice':            #same as above but without cardinality column
-            mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
-            mdown += td[TDESC] + '\n\n'
-            mdown += '| |' + td[TTYPE] + '| | |\n'
-            mdown += '|---|---|---|---|\n'
-            mdown += '|**ID**|**Name**|**Type**|**Description**|\n'
-            for fd in td[FIELDS]:
-                mdown += '|' + str(fd[FTAG]) + '|' + fd[FNAME] + '|' + fd[FTYPE]
-                mdown += '|' + fd[FDESC] + '|\n'
-            n += 1
-        elif td[TTYPE] == 'ArraryOf':
-            mdown += '### 3.4.' + str(n) + ' ' + td[TNAME] + '\n'
-            mdown += td[TDESC] + '\n\n'
-            mdown += '(arrayof definition)\n'
-            n += 1
+            len = ""        # TODO: format min-max into string length or number range
+            fmt = " (" + to["format"] + ")" if "format" in to else ""
+            mdown += '|' + td[TNAME] + '|' + td[TTYPE] + len + fmt + '|' + td[TDESC] + '|\n'
 
     return mdown
 

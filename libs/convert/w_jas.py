@@ -13,6 +13,7 @@ stype_map = {                   # Map JADN built-in types to JAS type names
     "Boolean": "BOOLEAN",         # BOOLEAN
     "Integer": "INTEGER",         # INTEGER
     "Number": "REAL",             # REAL
+    "Null": "NULL",               # NULL
     "String": "STRING",           # UTF8String
     "Array": "ARRAY",             # SEQUENCE
     "ArrayOf": "ARRAY_OF",        # SEQUENCE OF
@@ -92,9 +93,10 @@ def jas_dumps(jadn):
                     if "atfield" in opts:
                         ostr += ".&" + opts["atfield"]
                         del opts["atfield"]
-                    if opts["min"] > 0:         # TODO: handle array fields (max != 1)
-                        ostr += " OPTIONAL"
-                    del opts["min"]
+                    if "min" in opts:
+                        if opts["min"] == 0:         # TODO: handle array fields (max != 1)
+                            ostr += " OPTIONAL"
+                        del opts["min"]
                     items += [fmt.format(i[FTAG], i[FNAME], i[FTYPE], ostr, i[5]) + (" ***" + str(opts) if opts else "")]
                 jas += "\n".join(items)
             jas += "\n}\n" if titems else "}\n"

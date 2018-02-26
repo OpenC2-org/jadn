@@ -108,7 +108,7 @@ def fopts_s2d(ostr):
     }
 
     assert isinstance(ostr, (list, tuple)), "%r is not a list" % ostr
-    opts = {"min": 1, "max": 1}
+    opts = {}
     for o in ostr:
         try:
             k = FIELD_OPTIONS[ord(o[0])]

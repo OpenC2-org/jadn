@@ -36,6 +36,7 @@ PRIMITIVE_TYPES = (
     'Boolean',
     'Integer',
     'Number',
+    'Null',
     'String',
 )
 
@@ -67,6 +68,6 @@ FIELD_OPTIONS = {
     0x5b: 'min',        # '[', integer, minimum cardinality of field, default = 1, 0 = field is optional
     0x5d: 'max',        # ']', integer, maximum cardinality of field, default = 1, 0 = inherited max, not 1 = array
     0x26: 'atfield',    # '&', string, name of a field that specifies the type of this field
-    0x2f: 'etype',      # '/', string, encoded value type, e.g., u8, s16
+    0x2f: 'etype',      # '/', string, serializer-specific encoding type, e.g., u8, s16, hex, base64
     0x21: 'default',    # '!', string, default value for this field (coerced to field type)
 }

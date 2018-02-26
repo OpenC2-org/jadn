@@ -24,8 +24,9 @@ from libs.convert.w_markdown import markdown_dump
 
 
 if __name__ == "__main__":
-    for fn in ("openc2", "openc2-v0.4",):
-        ifname = os.path.join("schema", fn)
+    idir = 'schema'
+    for fn in (f[0] for f in (os.path.splitext(i) for i in os.listdir(idir)) if f[1] == '.jadn'):
+        ifname = os.path.join(idir, fn)
         ofname = os.path.join("schema_gen", fn)
 
         # Prettyprint JADN, and convert to other formats

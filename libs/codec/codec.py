@@ -341,6 +341,20 @@ def _encode_array(ts, val, codec):
     return apival
 
 
+def _decode_null(ts, val, codec):
+    _check_type(ts, val, type(''))
+    if val:
+        _bad_value(ts, val)
+    return val
+
+
+def _encode_null(ts, val, codec):
+    _check_type(ts, val, type(''))
+    if val:
+        _bad_value(ts, val)
+    return val
+
+
 def _decode_string(ts, val, codec):
     _check_type(ts, val, type(''))
     return val
@@ -364,6 +378,7 @@ enctab = {  # decode, encode, min encoded type
     "Boolean": (_decode_boolean, _encode_boolean, bool),
     "Integer": (_decode_integer, _encode_integer, int),
     "Number": (_decode_number, _encode_number, float),
+    "Null": (_decode_null, _encode_null, str),
     "String": (_decode_string, _encode_string, str),
     "ArrayOf": (_decode_array_of, _encode_array_of, list),
     "Array": (_decode_array, _encode_array, list),

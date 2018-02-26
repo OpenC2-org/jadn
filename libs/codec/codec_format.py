@@ -24,5 +24,8 @@ FORMAT_FUNCTIONS = (
 # Additional validation functions
     'duration',
     'ip-addr',          # Either an IPv4 or IPv6 address
+    'port',             # Service Name or Transport Protocol Port Number, per IANA registry
+    'mac-addr',         # 48 bit Media Access Code address
     'is-even',          # Silly example of a function that applies to integer instances
+    'json',             # A json document
 )
