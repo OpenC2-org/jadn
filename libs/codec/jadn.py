@@ -86,35 +86,57 @@ def jadn_check(schema):
     Check JADN structure against JSON schema, then perform additional checks on type definitions
     """
 
+    valid_topts = {
+        'Binary': [],
+        'Boolean': [],
+        'Integer': ['min', 'max'],
+        'Number': ['min', 'max'],
+        'String': ['min', 'max', 'pattern', 'format'],
+        'Array': ['min', 'max'],
+        'ArrayOf': ['min', 'max', 'aetype'],
+        'Choice': [],
+        'Enumerated': ['etag'],
+        'Map': [],
+        'Record': [],
+    }
+    valid_fopts = {
+        "Array": ['min', 'max', 'etype'],
+        "Choice": [],
+        "Enumerated": [],
+        "Map": ['min', 'max', 'etype'],
+        "Record": ['min', 'max', 'etype', 'atfield'],
+    }
+
     jsonschema.Draft4Validator(jadn_schema).validate(schema)
 
     for t in schema["types"]:     # datatype definition: 0-name, 1-type, 2-options, 3-description, 4-item list
         if not is_builtin(t[TTYPE]):
             print("Type error: Unknown type", t[TTYPE], "(" + t[TNAME] + ")")       # TODO: handle if t[TNAME] doesn't exist
+        vop = {k for k in topts_s2d(t[TOPTS])} - {k for k in valid_topts[t[TTYPE]]}
+        if vop:
+            print("Error:", t[TNAME], "type", t[TTYPE], "invalid option", str(vop))
         if is_primitive(t[TTYPE]) or t[TTYPE] == 'ArrayOf':
             if len(t) != 4:    # TODO: trace back to base type
                 print("Type format error:", t[TNAME], "- type", t[TTYPE], "cannot have items")
         else:
             if len(t) != 5:
                 print("Type format error:", t[TNAME], "- missing items from compound type", t[TTYPE])
-        for o, v in topts_s2d(t[2]).items():
-            if o not in ["pattern"] and o == "optional" and v:      # "optional" not present when value = False
-                print("Invalid typedef option:", t[0], o)
-        tags = set()
-        if len(t) > 4:
-            n = 3 if t[1] == "Enumerated" else 5
-            for k, i in enumerate(t[FIELDS]):       # item definition: 0-tag, 1-name, 2-type, 3-options, 4-description
-                tags.update(set([i[FTAG]]))         # or (enumerated): 0-tag, 1-name, 2-description
-                if t[TTYPE] == "Record" and i[FTAG] != k + 1:
-                    print("Item tag error:", t[TTYPE], i[FNAME], i[FTAG], "should be", k + 1)
-                if len(i) != n:
-                    print("Item format error:", t[TNAME], t[TTYPE], i[FNAME], "-", len(i), "!=", n)
-                for o in fopts_s2d(i[3]) if n > 3 else []:
-                    if o not in ["atfield", "optional", "min", "max", "etag"]:
-                        print("Invalid field option:", t[TNAME], i[FNAME], o)
-# TODO: add check that wildcard name MUST be Choice type, and that only one wildcard is permitted per map/record.
-            if len(t[FIELDS]) != len(tags):
-                print("Tag collision", t[TNAME], len(t[FIELDS]), "items,", len(tags), "unique tags")
+            else:
+                tags = set()
+                n = 3 if t[1] == "Enumerated" else 5
+                for k, i in enumerate(t[FIELDS]):       # item definition: 0-tag, 1-name, 2-type, 3-options, 4-description
+                    tags.update(set([i[FTAG]]))         # or (enumerated): 0-tag, 1-name, 2-description
+                    if t[TTYPE] == "Record" and i[FTAG] != k + 1:
+                        print("Item tag error:", t[TTYPE], i[FNAME], i[FTAG], "should be", k + 1)
+                    if len(i) != n:
+                        print("Item format error:", t[TNAME], t[TTYPE], i[FNAME], "-", len(i), "!=", n)
+                    if len(i) > 3:
+                        fop = {k for k in fopts_s2d(i[FOPTS])} - {k for k in valid_fopts[t[TTYPE]]}
+                        if fop:
+                            print("Error:", t[TNAME], "field", i[FNAME], i[FTYPE], "invalid option", str(fop))
+    # TODO: add check that wildcard name MUST be Choice type, and that only one wildcard is permitted per map/record.
+                if len(t[FIELDS]) != len(tags):
+                    print("Tag collision", t[TNAME], len(t[FIELDS]), "items,", len(tags), "unique tags")
     return schema
 
 
