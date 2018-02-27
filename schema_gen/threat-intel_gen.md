@@ -1,4 +1,4 @@
-<!-- Generated from schema\threat-intel.jadn, Tue Feb 27 16:55:50 2018-->
+<!-- Generated from schema\threat-intel.jadn, Tue Feb 27 17:46:37 2018-->
 <!--
 -->
 
@@ -16,7 +16,7 @@ Information about the reputation of an entity.
 |2|name|String|1|The name of the file or domain.|
 |3|severity|rep-score|1|Score from 0-7, with 0 being trusted and 7 being known bad.|
 |4|comment|String|0..1|Comment of justification as to why this was set.|
-|5|hashes|hashes|0..1|Hashes of some data about the entity.|
+|5|hashes|hashes|0..n|Hashes of some data about the entity(ies).|
 |6|ips|ip-addr|0..n|List of IP addresses.|
 ### 3.2.2 Device
 

@@ -13,7 +13,7 @@
     [2, "name", "String", [], "The name of the file or domain."],
     [3, "severity", "rep-score", [], "Score from 0-7, with 0 being trusted and 7 being known bad."],
     [4, "comment", "String", ["[0"], "Comment of justification as to why this was set."],
-    [5, "hashes", "hashes", ["[0"], "Hashes of some data about the entity."],
+    [5, "hashes", "hashes", ["[0","]0"], "Hashes of some data about the entity(ies)."],
     [6, "ips", "ip-addr", ["[0","]0"], "List of IP addresses."]]
   ],
 
