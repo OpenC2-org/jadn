@@ -38,6 +38,8 @@
   ],
 
   ["hashes", "Map", [], "Hash values", [
+    [1, "MD5", "Binary", ["[0"], "MD5 message digest as defined in RFC3121"],
+    [4, "SHA-1", "Binary", ["[0"], "Secure Hash Algorithm (SHA)-1 as defined in RFC3174"],
     [5, "SHA-224", "Binary", ["[0"], "SHA-224 as defined in RFC6234 (US Secure Hash Algorithms)"],
     [7, "SHA-384", "Binary", ["[0"], "SHA-384 as defined in RFC6234"],
     [9, "SHA3-224", "Binary", ["[0"], "SHA3-224 as defined in FIPS PUP 202"],

@@ -1,4 +1,4 @@
-<!-- Generated from schema\threat-intel.jadn, Tue Feb 27 16:10:27 2018-->
+<!-- Generated from schema\threat-intel.jadn, Tue Feb 27 16:55:50 2018-->
 <!--
 -->
 
@@ -34,6 +34,8 @@ Hash values
 | |Map| | | |
 |---|---|---|---:|---|
 |**ID**|**Name**|**Type**|**#**|**Description**|
+|1|MD5|Binary|0..1|MD5 message digest as defined in RFC3121|
+|4|SHA-1|Binary|0..1|Secure Hash Algorithm (SHA)-1 as defined in RFC3174|
 |5|SHA-224|Binary|0..1|SHA-224 as defined in RFC6234 (US Secure Hash Algorithms)|
 |7|SHA-384|Binary|0..1|SHA-384 as defined in RFC6234|
 |9|SHA3-224|Binary|0..1|SHA3-224 as defined in FIPS PUP 202|
