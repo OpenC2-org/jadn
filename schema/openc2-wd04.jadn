@@ -118,7 +118,7 @@
     [501, "", "Not Implemented - the server does not support the functionality required to fulfill the request."]]
   ],
 
-  ["hashes-type", "Map", [], "Hash values for algorithms included in hash-algo-ov", [
+  ["hashes", "Map", [], "Hash values", [
     [1, "MD5", "Binary", ["[0"], "MD5 message digest as defined in RFC3121"],
     [2, "MD6", "Binary", ["[0"], "MD6 message digest as defined in MD6 proposal"],
     [3, "RIPEMD-160", "Binary", ["[0"], "RACE Integrity Primitives Evaluation Message as defined in RIPEMD-160 specification"],
@@ -138,7 +138,7 @@
   ["artifact", "Record", [], "", [
     [1, "mime_type", "String", ["[0"], "MUST be a valid MIME type as specified in the IANA Media Types registry"],
     [2, "*", "payload", ["[0"], "choice of literal content or URL to obtain content"],
-    [3, "hashes", "hashes-type", ["[0"], "Specifies a dictionary of hashes for the contents of the payload"]]
+    [3, "hashes", "hashes", ["[0"], "Specifies a dictionary of hashes for the contents of the payload"]]
   ],
 
   ["payload", "Choice", [], "", [
@@ -159,7 +159,7 @@
   ["file", "Map", [], "", [
     [1, "name", "String", ["[0"], ""],
     [2, "path", "String", ["[0"], ""],
-    [3, "hash", "hashes-type", ["[0"], ""],
+    [3, "hash", "hashes", ["[0"], ""],
     [4, "reputation", "reputation", ["[0"], ""]]
    ],
 
