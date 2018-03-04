@@ -93,7 +93,7 @@ Enumerated | A set of id:name pairs.  Serialized as either the integer id or the
 Map        | An unordered set of named fields.  Each field has a name and a type.  Serialized as a mapping type (referred to in various programming languages as: associative array, dict, dictionary, hash, map, object).
 Record     | An ordered list of named fields, e.g. a message, record, structure, or row in a table.  Each field has an ordinal position, a name, and a type. Serialized as either a list or a map.
 
-## Option Tags/Keys
+## Options
 
 The Type Options and Field Options items are a list of strings where each string is an option.
 The first character is the type ID; the remaining characters are the value.
