@@ -1,4 +1,4 @@
-<!-- Generated from schema\openc2-wd04.jadn, Tue Feb 27 17:46:37 2018-->
+<!-- Generated from schema\openc2-wd04.jadn, Fri Mar  2 11:11:02 2018-->
 <!--
 -->
 

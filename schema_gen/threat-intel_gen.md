@@ -1,4 +1,4 @@
-<!-- Generated from schema\threat-intel.jadn, Tue Feb 27 17:46:37 2018-->
+<!-- Generated from schema\threat-intel.jadn, Fri Mar  2 11:11:02 2018-->
 <!--
 -->
 
