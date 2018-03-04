@@ -35,7 +35,7 @@ And the JADN version is:
 
 Although JADN can be edited directly, it is also possible to document
 data structures using an interface definition language (IDL) such as
-Thrift [1] or Protobuf [2], and translate the definitions into JADN format.
+Thrift [[1](#ref1)] or Protobuf [[2](#ref2)], and translate the definitions into JADN format.
 The advantage of JADN is that an IDL parser is not needed in order to use it.
 JADN is designed for machine consumption and is read using the standard
 JSON loader present in most programming languages.
@@ -95,7 +95,7 @@ Record     | An ordered list of named fields, e.g. a message, record, structure,
 
 ## Option Tags/Keys
 
-The JADN Type Options (TOPTS) and Field Options (FOPTS) elements are a list of strings where each string is an option.
+The Type Options and Field Options items are a list of strings where each string is an option.
 The first character is the type ID; the remaining characters are the value.
 The option string is converted into a Name: Value pair before use, where the Name corresponds to the type ID
 and the Value has the type shown in the tables.
@@ -120,17 +120,22 @@ and the Value has the type shown in the tables.
   0x2f | etype   |  /  | string  | serializer-specific encoding type, e.g., u8, i32, hex, base64
   0x21 | default |  !  | string  | default value for this field (coerced to field type)
 
+In the example above, the field options list [ "[0" ] contains one option.
+The option ID is "[" (min) and value is "0", indicating that the minimum cardinality of the
+email field is 0, i.e., that field is optional.  
+
 ## Serialization
 Thrift and Protobuf each define a specific format for serialized data.  JADN is format-independent,
 which allows messages to be serialized using a format most suited to the application.
 
-An instance of a JADN structure called Test1 consisting of a single integer named "a" with the value 150:
+A JADN definition of a type called Test1 consisting of a single integer named "a" would be:
 
     ["Test1", "Record", [], "", [
         [1, "a", "Integer", [], ""]]
     ]
 
-would be serialized in Protobuf format [3] as three hex bytes:
+An instance of Test1 with the value a=150 would be serialized
+in Protobuf format [[3](#ref3)] as three hex bytes:
 
     08 96 01
 
@@ -147,8 +152,6 @@ selected serialization format.
 
 ## References
 
-[1] https://thrift.apache.org/docs/idl
-
-[2] https://developers.google.com/protocol-buffers/
-
-[3] https://developers.google.com/protocol-buffers/docs/encoding
+1. <a name="ref1">https://thrift.apache.org/docs/idl</a>
+2. <a name="ref2">https://developers.google.com/protocol-buffers/</a>
+3. <a name="ref3">https://developers.google.com/protocol-buffers/docs/encoding</a> 
