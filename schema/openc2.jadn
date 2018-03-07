@@ -30,7 +30,7 @@
     [2, "status_text", "String", ["[0"], "Status description"],
     [3, "response_src", "device-id", ["[0"], "ID of the responder/actuator"],
     [4, "command_ref", "command-id", ["[0"], "Command unique identifier, from \"command_id\" modifier"],
-    [5, "data", "String", ["[0", "]0"], "Results of executing the command"]]
+    [5, "results", "String", ["[0", "]0"], "Results of executing the command"]]
   ],
 
   ["OpenC2Notification", "Record", [], "", [

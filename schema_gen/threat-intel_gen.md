@@ -1,4 +1,4 @@
-<!-- Generated from schema\threat-intel.jadn, Fri Mar  2 11:11:02 2018-->
+<!-- Generated from schema\threat-intel.jadn, Wed Mar  7 15:19:46 2018-->
 <!--
 -->
 
@@ -10,7 +10,7 @@ Datatypes used to support the Set Reputation use case.
 Information about the reputation of an entity.
 
 | |Record| | | |
-|---|---|---|---:|---|
+|---:|---|---|---:|---|
 |**ID**|**Name**|**Type**|**#**|**Description**|
 |1|type|rep-type|1|The type of object for which the reputation should be set.|
 |2|name|String|1|The name of the file or domain.|
@@ -22,17 +22,24 @@ Information about the reputation of an entity.
 
 
 | |Map| | | |
-|---|---|---|---:|---|
+|---:|---|---|---:|---|
 |**ID**|**Name**|**Type**|**#**|**Description**|
 |1|hostname|hostname|1|The hostname of device|
 |2|ipv4_addr|ipv4-addr|0..1|The IPv4 address of a device.|
 |5|ipv6_addr|ipv6-addr|0..1|The IPv6 address of a device.|
 |6|id|String|1|The registered device ID.|
-### 3.2.3 hashes
+### 3.3.3 rep-type
+
+
+|ID|Name|Description|
+|---:|---|---|
+|0|file|Reputation applies to a file object.|
+|1|domain|Reputation applies to a domain object.|
+### 3.2.4 hashes
 Hash values
 
 | |Map| | | |
-|---|---|---|---:|---|
+|---:|---|---|---:|---|
 |**ID**|**Name**|**Type**|**#**|**Description**|
 |1|MD5|Binary|0..1|MD5 message digest as defined in RFC3121|
 |4|SHA-1|Binary|0..1|Secure Hash Algorithm (SHA)-1 as defined in RFC3174|
@@ -40,15 +47,7 @@ Hash values
 |7|SHA-384|Binary|0..1|SHA-384 as defined in RFC6234|
 |9|SHA3-224|Binary|0..1|SHA3-224 as defined in FIPS PUP 202|
 |12|SHA3-512|Binary|0..1|SHA3-512 as defined in FIPS PUP 202|
-## 3.3 Vocabularies
-### 3.3.1 rep-type
-
-
-|ID|Name|Description|
-|---|---|---|
-|0|file|Reputation applies to a file object.|
-|1|domain|Reputation applies to a domain object.|
-### 3.3.2 rep-score
+### 3.3.5 rep-score
 
 
 |Value|Description|
@@ -61,7 +60,7 @@ Hash values
 |5|Possibly Malicious|
 |6|Likely Malicious|
 |7|Known Malicious|
-## 3.4 Primitive Types
+## 3.3 Primitive Types
 |Name|Type|Description|
 |---|---|---|
 |ip-addr|String (ip)|IPv4 or IPv6 address|

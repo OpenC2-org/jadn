@@ -64,6 +64,9 @@ class Codec:
         self.symtab = {}
         self.set_mode(verbose_rec, verbose_str)
         assert set(enctab) == set(PRIMITIVE_TYPES + STRUCTURE_TYPES)
+        self.max_array = 100,       # Set conservative upper bounds that can be overridden when necessary
+        self.max_string = 255,
+        self.max_binary = 32767
 
     def decode(self, datatype, mstr):
         try:
@@ -79,13 +82,28 @@ class Codec:
             raise ValueError("datatype '%s' is not defined: %s" % (datatype, message))
         return symtype[S_CODEC][C_ENC](symtype, message, self)
 
+    def _check_type(self, ts, val, vtype):
+        if vtype is not None:
+            if type(val) != vtype:
+                td = ts[S_TDEF]
+                tn = "%s(%s)" % (td[TNAME], td[TTYPE]) if td else "Primitive"
+                raise TypeError("%s: %r is not %s" % (tn, val, vtype))
+            op = ts[S_TOPT]
+            if vtype in (list, type('')):
+                if len(val) < op['min']:
+                    raise ValueError("%s: length %s < minimum %s" % td[TNAME], len(val), omin)
+                if len(val) > op['max']:
+                    raise ValueError("%s: length %s > maximum %s" % td[TNAME], len(val), omax)
+
     def set_mode(self, verbose_rec=False, verbose_str=False):
-        def symf(fld):               # Field entries
+        def symf(fld):              # Field entries
             fs = [
-                fld,                 # S_FDEF: JADN field definition
+                fld,                # S_FDEF: JADN field definition
                 fopts_s2d(fld[FOPTS]) if len(fld) > FOPTS else None,  # S_FOPT: Field options (dict)
                 []                  # S_FNAMES: Possible field names returned from Choice type
             ]
+            if fld[FTYPE] == list:
+                pass    # TODO: set min and max
             return fs
 
         def sym(t):                 # Build symbol table based on encoding modes
@@ -107,8 +125,9 @@ class Codec:
                 fx = FNAME
                 symval[S_STYPE] = type('')
             if t[TTYPE] == "Enumerated":
-                symval[S_DMAP] = {f[fx]: f[FNAME] for f in t[FIELDS]}
-                symval[S_EMAP] = {f[FNAME]: f[fx] for f in t[FIELDS]}
+                fa = FTAG if "etag" in symval[S_TOPT] else FNAME
+                symval[S_DMAP] = {f[fx]: f[fa] for f in t[FIELDS]}
+                symval[S_EMAP] = {f[fa]: f[fx] for f in t[FIELDS]}
             if t[TTYPE] in ["Choice", "Map", "Record"]:
                 fx = FNAME if verbose_str else FTAG
                 symval[S_FLD] = {str(f[fx]): symf(f) for f in t[FIELDS]}
@@ -128,14 +147,6 @@ class Codec:
                             ("Binary", "Boolean", "Integer", "Number", "String")})
 
 
-def _check_type(ts, val, vtype):
-    if vtype is not None:
-        if type(val) != vtype:
-            td = ts[S_TDEF]
-            tn = "%s(%s)" % (td[TNAME], td[TTYPE]) if td else "Primitive"
-            raise TypeError("%s: %r is not %s" % (tn, val, vtype))
-
-
 def _bad_value(ts, val, fld=None):
     td = ts[S_TDEF]
     if fld is not None:
@@ -149,40 +160,38 @@ def _extra_value(ts, val, fld):
     raise ValueError("%s(%s): unexpected field: %s not in %s:" % (td[TNAME], td[TTYPE], val, fld))
 
 
-def _decode_array_of(ts, val, codec):               # TODO: refactor into array and array_of
-    _check_type(ts, val, list)                      # TODO: check min/max array length
-    vtype = ts[S_TOPT]["aetype"]
-    return [codec.decode(vtype, v) for v in val]
+def _decode_array_of(ts, val, codec):
+    codec._check_type(ts, val, list)                      # TODO: check min/max array length
+    return [codec.decode(ts[S_TOPT]["aetype"], v) for v in val]
 
 
 def _encode_array_of(ts, val, codec):
-    _check_type(ts, val, list)
-    vtype = ts[S_TOPT]["aetype"]
-    return [codec.encode(vtype, v) for v in val]
+    codec._check_type(ts, val, list)
+    return [codec.encode(ts[S_TOPT]["aetype"], v) for v in val]
 
 
 def _decode_binary(ts, val, codec):
-    _check_type(ts, val, type(''))
+    codec._check_type(ts, val, type(''))
     return base64.standard_b64decode(val.encode(encoding="UTF-8"))
 
 
 def _encode_binary(ts, val, codec):
-    _check_type(ts, val, bytes)
+    codec._check_type(ts, val, bytes)
     return base64.standard_b64encode(val).decode(encoding="UTF-8")
 
 
 def _decode_boolean(ts, val, codec):
-    _check_type(ts, val, bool)
+    codec._check_type(ts, val, bool)
     return val
 
 
 def _encode_boolean(ts, val, codec):
-    _check_type(ts, val, bool)
+    codec._check_type(ts, val, bool)
     return val
 
 
 def _decode_choice(ts, val, codec):
-    _check_type(ts, val, dict)
+    codec._check_type(ts, val, dict)
     k = next(iter(val))
     if len(val) != 1 or k not in ts[S_FLD]:
         _bad_value(ts, val)
@@ -191,7 +200,7 @@ def _decode_choice(ts, val, codec):
 
 
 def _encode_choice(ts, val, codec):         # TODO: bad schema - verify * field has only Choice type
-    _check_type(ts, val, dict)
+    codec._check_type(ts, val, dict)
     k = next(iter(val))
     if len(val) != 1 or k not in ts[S_EMAP]:
         _bad_value(ts, val)
@@ -201,7 +210,7 @@ def _encode_choice(ts, val, codec):         # TODO: bad schema - verify * field 
 
 
 def _decode_enumerated(ts, val, codec):
-    _check_type(ts, val, ts[S_STYPE])
+    codec._check_type(ts, val, ts[S_STYPE])
     if val in ts[S_DMAP]:
         return ts[S_DMAP][val]
     else:
@@ -210,7 +219,8 @@ def _decode_enumerated(ts, val, codec):
 
 
 def _encode_enumerated(ts, val, codec):
-    _check_type(ts, val, type(''))
+    etype = int if 'etag' in ts[S_TOPT] else type('')
+    codec._check_type(ts, val, etype)
     if val in ts[S_EMAP]:
         return ts[S_EMAP][val]
     else:
@@ -219,29 +229,29 @@ def _encode_enumerated(ts, val, codec):
 
 
 def _decode_integer(ts, val, codec):
-    _check_type(ts, val, int)
+    codec._check_type(ts, val, int)
     return val
 
 
 def _encode_integer(ts, val, codec):
-    _check_type(ts, val, int)
+    codec._check_type(ts, val, int)
     return val
 
 
 def _decode_number(ts, val, codec):
     val = float(val) if type(val) == int else val
-    _check_type(ts, val, float)
+    codec._check_type(ts, val, float)
     return val
 
 
 def _encode_number(ts, val, codec):
     val = float(val) if type(val) == int else val
-    _check_type(ts, val, float)
+    codec._check_type(ts, val, float)
     return val
 
 
 def _decode_maprec(ts, val, codec):
-    _check_type(ts, val, ts[S_CODEC][C_ETYPE])
+    codec._check_type(ts, val, ts[S_CODEC][C_ETYPE])
     apival = dict()
     fx = FNAME if ts[S_VSTR] else FTAG    # Verbose or minified identifier strings
     fnames = [k for k in ts[S_FLD]]
@@ -266,7 +276,7 @@ def _decode_maprec(ts, val, codec):
             else:
                 apival[f[FNAME]] = codec.decode(ftype, fv)
         else:
-            if not fopts["optional"]:
+            if "min" not in fopts or fopts["min"] > 0:
                 _bad_value(ts, val, f)
     extra = set(val) - set(fnames) if type(val) == dict else len(val) > len(ts[S_FLD])
     if extra:
@@ -275,7 +285,7 @@ def _decode_maprec(ts, val, codec):
 
 
 def _encode_maprec(ts, val, codec):
-    _check_type(ts, val, dict)
+    codec._check_type(ts, val, dict)
     encval = ts[S_CODEC][C_ETYPE]()
     assert type(encval) in (list, dict)
     fx = FNAME if ts[S_VSTR] else FTAG    # Verbose or minified identifier strings
@@ -291,7 +301,7 @@ def _encode_maprec(ts, val, codec):
         else:
             vn = f[FNAME]
             fv = codec.encode(ftype, val[vn]) if vn in val else None
-        if fv is None and not fopts["optional"]:     # Missing required field
+        if fv is None and ("min" not in fopts or fopts["min"] > 0):     # Missing required field
             _bad_value(ts, val, f)
         if type(encval) == list:            # Concise Record
             encval.append(fv)
@@ -311,7 +321,7 @@ def _encode_maprec(ts, val, codec):
 
 
 def _decode_array(ts, val, codec):          # Ordered list of types, no names in API
-    _check_type(ts, val, list)
+    codec._check_type(ts, val, list)
     apival = list()
     extra = len(val) > len(ts[S_FLD])
     if extra:
@@ -325,13 +335,13 @@ def _decode_array(ts, val, codec):          # Ordered list of types, no names in
             apival.append(codec.decode(ftype, av))
         else:
             apival.append(None)
-            if not fopts["optional"]:
+            if fopts["min"] > 0:
                 _bad_value(ts, val, f)
     return apival
 
 
 def _encode_array(ts, val, codec):
-    _check_type(ts, val, list)
+    codec._check_type(ts, val, list)
     apival = list()
     extra = len(val) > len(ts[S_FLD])
     if extra:
@@ -342,26 +352,26 @@ def _encode_array(ts, val, codec):
 
 
 def _decode_null(ts, val, codec):
-    _check_type(ts, val, type(''))
+    codec._check_type(ts, val, type(''))
     if val:
         _bad_value(ts, val)
     return val
 
 
 def _encode_null(ts, val, codec):
-    _check_type(ts, val, type(''))
+    codec._check_type(ts, val, type(''))
     if val:
         _bad_value(ts, val)
     return val
 
 
 def _decode_string(ts, val, codec):
-    _check_type(ts, val, type(''))
+    codec._check_type(ts, val, type(''))
     return val
 
 
 def _encode_string(ts, val, codec):
-    _check_type(ts, val, type(''))
+    codec._check_type(ts, val, type(''))
     return val
 
 

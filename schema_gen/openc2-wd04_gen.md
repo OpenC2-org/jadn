@@ -1,4 +1,4 @@
-<!-- Generated from schema\openc2-wd04.jadn, Fri Mar  2 11:11:02 2018-->
+<!-- Generated from schema\openc2-wd04.jadn, Wed Mar  7 15:19:46 2018-->
 <!--
 -->
 
@@ -10,7 +10,7 @@ Datatypes that define the content of OpenC2 commands and responses.
 Communicates an action to be performed on a target and may include information identifying the actuator(s) to execute the command.
 
 | |Record| | | |
-|---|---|---|---:|---|
+|---:|---|---|---:|---|
 |**ID**|**Name**|**Type**|**#**|**Description**|
 |1|action|Action|1|The task or activity to be performed (i.e., the 'verb').|
 |2|target|Target|1|The object of the action. The action is performed on the target.|
@@ -20,154 +20,16 @@ Communicates an action to be performed on a target and may include information i
 
 
 | |Record| | | |
-|---|---|---|---:|---|
+|---:|---|---|---:|---|
 |**ID**|**Name**|**Type**|**#**|**Description**|
 |1|status|status-code|1|Adapted from HTTP Status Codes, RFC 7231|
 |2|status_text|String|0..1|Status description|
 |5|results|String|0..n|Results of executing the command|
-### 3.2.3 Target
-OpenC2 Target datatypes
-
-| |Choice| | |
-|---|---|---|---|
-|**ID**|**Name**|**Type**|**Description**|
-|1|artifact|artifact|An array of bytes representing a file-like object or a link to that object.|
-|2|command|command-id|A reference to a previously issued OpenC2 command|
-|3|device|device||
-|4|directory|directory||
-|5|disk|disk||
-|6|disk_partition|disk-partition||
-|7|domain_name|domain-name||
-|8|email_addr|email-addr||
-|9|email_message|email-message||
-|10|file|file||
-|11|ipv4_addr|ipv4-addr||
-|12|ipv6_addr|ipv6-addr||
-|13|mac_addr|mac-addr||
-|14|memory|memory||
-|15|ip_connection|ip-connection||
-|16|openc2|openc2|OpenC2 - query actuator for supported capabilities, negotiate connection|
-|17|process|process||
-|18|software|software||
-|19|uri|uri||
-|20|user_account|user-account||
-|21|user_session|user-session||
-|22|volume|volume||
-|23|windows_registry_key|windows-registry-key||
-|24|x509_certificate|x509-certificate||
-### 3.2.4 Actuator
-
-
-| |Choice| | |
-|---|---|---|---|
-|**ID**|**Name**|**Type**|**Description**|
-|1|any|ActuatorSpecifiers||
-|2|firewall|ActuatorSpecifiers||
-### 3.2.5 ActuatorSpecifiers
-
-
-| |Record| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|actuator_id|uri|0..1||
-|2|asset_id|String|0..1||
-### 3.2.6 Command-Options
-
-
-| |Map| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|start_time|date-time|0..1|universal|
-|2|end_time|date-time|0..1|universal|
-|3|duration|duration|0..1|pause, delay|
-|4|response_requested|response-type|0..1|Type of response required for the action|
-|5|command_id|command-id|0..1|universal  (was "id")|
-### 3.2.7 hashes
-Hash values
-
-| |Map| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|MD5|Binary|0..1|MD5 message digest as defined in RFC3121|
-|2|MD6|Binary|0..1|MD6 message digest as defined in MD6 proposal|
-|3|RIPEMD-160|Binary|0..1|RACE Integrity Primitives Evaluation Message as defined in RIPEMD-160 specification|
-|4|SHA-1|Binary|0..1|Secure Hash Algorithm (SHA)-1 as defined in RFC3174|
-|5|SHA-224|Binary|0..1|SHA-224 as defined in RFC6234 (US Secure Hash Algorithms)|
-|6|SHA-256|Binary|0..1|SHA-256 as defined in RFC6234|
-|7|SHA-384|Binary|0..1|SHA-384 as defined in RFC6234|
-|8|SHA-512|Binary|0..1|SHA-512 as defined in RFC6234|
-|9|SHA3-224|Binary|0..1|SHA3-224 as defined in FIPS PUP 202|
-|10|SHA3-256|Binary|0..1|SHA3-256 as defined in FIPS PUP 202|
-|11|SHA3-384|Binary|0..1|SHA3-384 as defined in FIPS PUP 202|
-|12|SHA3-512|Binary|0..1|SHA3-512 as defined in FIPS PUP 202|
-|13|ssdeep|Binary|0..1|ssdeep fuzzy hashing algorithm as defined in the SSDEEP specification|
-|14|WHIRLPOOL|Binary|0..1|whirlpool cryptographic hash function as defined in ISO/IEC 10118-3:2004|
-### 3.2.8 artifact
-
-
-| |Record| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|mime_type|String|0..1|MUST be a valid MIME type as specified in the IANA Media Types registry|
-|2|*|payload|0..1|choice of literal content or URL to obtain content|
-|3|hashes|hashes|0..1|Specifies a dictionary of hashes for the contents of the payload|
-### 3.2.9 payload
-
-
-| |Choice| | |
-|---|---|---|---|
-|**ID**|**Name**|**Type**|**Description**|
-|1|payload_bin|Binary|Specifies the data contained in the artifact.|
-|2|url|uri|MUST be a valid URL that resolves to the un-encoded content|
-### 3.2.10 device
-TODO: Add inventory device-id?
-
-| |Map| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|description|String|0..1||
-|2|device_type|String|0..1||
-|3|manufacturer|String|0..1||
-|4|model|String|0..1||
-|5|serial_number|String|0..1||
-|6|firmware_version|String|0..1||
-|7|system_details|String|0..1||
-### 3.2.11 file
-
-
-| |Map| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|name|String|0..1||
-|2|path|String|0..1||
-|3|hash|hashes|0..1||
-|4|reputation|reputation|0..1||
-### 3.2.12 ip-connection
-5-tuple that specifies a tcp/ip connection
-
-| |Record| | | |
-|---|---|---|---:|---|
-|**ID**|**Name**|**Type**|**#**|**Description**|
-|1|src_addr|ip-addr|0..1|source address|
-|2|src_port|port|0..1|source TCP/UDP port number|
-|3|dst_addr|ip-addr|0..1|destination address|
-|4|dst_port|port|0..1|destination TCP/UDP port number|
-|5|layer4_protocol|layer4-protocol|0..1|Protocol (IPv4) / Next Header (IPv6)|
-### 3.2.13 openc2
-A target used to query Actuator for its supported capabilities
-
-| |Choice| | |
-|---|---|---|---|
-|**ID**|**Name**|**Type**|**Description**|
-|1|actions|Null|query: Results = JSON array of supported action verbs|
-|2|schema|Null|query: Results = JADN syntax of supported commands|
-|3|actuator_groups|Null|query: Results = JSON array of actuator group names|
-## 3.3 Vocabularies
-### 3.3.1 Action
+### 3.3.3 Action
 
 
 |ID|Name|Description|
-|---|---|---|
+|---:|---|---|
 |1|scan|Systematic examination of some aspect of the target entity or its environment in order to obtain information.|
 |2|locate|Find the target object physically, logically, functionally, or by organization.|
 |3|query|Initiate a request for information.|
@@ -201,14 +63,71 @@ A target used to query Actuator for its supported capabilities
 |31|investigate|Task the recipient to aggregate and report information as it pertains to a security event or incident.|
 |32|mitigate|Task the recipient to circumvent a problem without necessarily eliminating the vulnerability or attack point.|
 |33|remediate|Task the recipient to eliminate a vulnerability or attack point.|
-### 3.3.2 response-type
+### 3.2.4 Target
+OpenC2 Target datatypes
+
+| |Choice| | |
+|---:|---|---|---|
+|**ID**|**Name**|**Type**|**Description**|
+|1|artifact|artifact|An array of bytes representing a file-like object or a link to that object.|
+|2|command|command-id|A reference to a previously issued OpenC2 command|
+|3|device|device||
+|4|directory|directory||
+|5|disk|disk||
+|6|disk_partition|disk-partition||
+|7|domain_name|domain-name||
+|8|email_addr|email-addr||
+|9|email_message|email-message||
+|10|file|file||
+|11|ipv4_addr|ipv4-addr||
+|12|ipv6_addr|ipv6-addr||
+|13|mac_addr|mac-addr||
+|14|memory|memory||
+|15|ip_connection|ip-connection||
+|16|openc2|openc2|OpenC2 - query actuator for supported capabilities, negotiate connection|
+|17|process|process||
+|18|software|software||
+|19|uri|uri||
+|20|user_account|user-account||
+|21|user_session|user-session||
+|22|volume|volume||
+|23|windows_registry_key|windows-registry-key||
+|24|x509_certificate|x509-certificate||
+### 3.2.5 Actuator
+
+
+| |Choice| | |
+|---:|---|---|---|
+|**ID**|**Name**|**Type**|**Description**|
+|1|any|ActuatorSpecifiers||
+|2|firewall|ActuatorSpecifiers||
+### 3.2.6 ActuatorSpecifiers
+
+
+| |Record| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|actuator_id|uri|0..1||
+|2|asset_id|String|0..1||
+### 3.2.7 Command-Options
+
+
+| |Map| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|start_time|date-time|0..1|universal|
+|2|end_time|date-time|0..1|universal|
+|3|duration|duration|0..1|pause, delay|
+|4|response_requested|response-type|0..1|Type of response required for the action|
+|5|command_id|command-id|0..1|universal  (was "id")|
+### 3.3.8 response-type
 
 
 |ID|Name|Description|
-|---|---|---|
+|---:|---|---|
 |1|ack||
 |2|status||
-### 3.3.3 status-code
+### 3.3.9 status-code
 
 
 |Value|Description|
@@ -221,7 +140,67 @@ A target used to query Actuator for its supported capabilities
 |403|Forbidden - the server understood the request but refuses to authorize it.|
 |500|Server Error - the server encountered an unexpected condition that prevented it from fulfilling the request.|
 |501|Not Implemented - the server does not support the functionality required to fulfill the request.|
-### 3.3.4 reputation
+### 3.2.10 hashes
+Hash values
+
+| |Map| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|MD5|Binary|0..1|MD5 message digest as defined in RFC3121|
+|2|MD6|Binary|0..1|MD6 message digest as defined in MD6 proposal|
+|3|RIPEMD-160|Binary|0..1|RACE Integrity Primitives Evaluation Message as defined in RIPEMD-160 specification|
+|4|SHA-1|Binary|0..1|Secure Hash Algorithm (SHA)-1 as defined in RFC3174|
+|5|SHA-224|Binary|0..1|SHA-224 as defined in RFC6234 (US Secure Hash Algorithms)|
+|6|SHA-256|Binary|0..1|SHA-256 as defined in RFC6234|
+|7|SHA-384|Binary|0..1|SHA-384 as defined in RFC6234|
+|8|SHA-512|Binary|0..1|SHA-512 as defined in RFC6234|
+|9|SHA3-224|Binary|0..1|SHA3-224 as defined in FIPS PUP 202|
+|10|SHA3-256|Binary|0..1|SHA3-256 as defined in FIPS PUP 202|
+|11|SHA3-384|Binary|0..1|SHA3-384 as defined in FIPS PUP 202|
+|12|SHA3-512|Binary|0..1|SHA3-512 as defined in FIPS PUP 202|
+|13|ssdeep|Binary|0..1|ssdeep fuzzy hashing algorithm as defined in the SSDEEP specification|
+|14|WHIRLPOOL|Binary|0..1|whirlpool cryptographic hash function as defined in ISO/IEC 10118-3:2004|
+### 3.2.11 artifact
+
+
+| |Record| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|mime_type|String|0..1|MUST be a valid MIME type as specified in the IANA Media Types registry|
+|2|*|payload|0..1|choice of literal content or URL to obtain content|
+|3|hashes|hashes|0..1|Specifies a dictionary of hashes for the contents of the payload|
+### 3.2.12 payload
+
+
+| |Choice| | |
+|---:|---|---|---|
+|**ID**|**Name**|**Type**|**Description**|
+|1|payload_bin|Binary|Specifies the data contained in the artifact.|
+|2|url|uri|MUST be a valid URL that resolves to the un-encoded content|
+### 3.2.13 device
+TODO: Add inventory device-id?
+
+| |Map| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|description|String|0..1||
+|2|device_type|String|0..1||
+|3|manufacturer|String|0..1||
+|4|model|String|0..1||
+|5|serial_number|String|0..1||
+|6|firmware_version|String|0..1||
+|7|system_details|String|0..1||
+### 3.2.14 file
+
+
+| |Map| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|name|String|0..1||
+|2|path|String|0..1||
+|3|hash|hashes|0..1||
+|4|reputation|reputation|0..1||
+### 3.3.15 reputation
 
 
 |Value|Description|
@@ -234,20 +213,31 @@ A target used to query Actuator for its supported capabilities
 |5|Possibly Malicious|
 |6|Likely Malicious|
 |7|Known Malicious|
-### 3.3.5 layer4-protocol
+### 3.2.16 ip-connection
+5-tuple that specifies a tcp/ip connection
+
+| |Record| | | |
+|---:|---|---|---:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|1|src_addr|ip-addr|0..1|source address|
+|2|src_port|port|0..1|source TCP/UDP port number|
+|3|dst_addr|ip-addr|0..1|destination address|
+|4|dst_port|port|0..1|destination TCP/UDP port number|
+|5|layer4_protocol|layer4-protocol|0..1|Protocol (IPv4) / Next Header (IPv6)|
+### 3.3.17 layer4-protocol
 protocol (IPv4) or next header (IPv6) field - any IANA value, RFC 5237
 
 |ID|Name|Description|
-|---|---|---|
+|---:|---|---|
 |1|icmp|Internet Control Message Protocol - RFC 792|
 |6|tcp|Transmission Control Protocol - RFC 793|
 |17|udp|User Datagram Protocol - RFC 768|
 |132|sctp|Stream Control Transmission Protocol - RFC 4960|
-### 3.3.6 layer7-protocol
+### 3.3.18 layer7-protocol
 Service Name and Transport Protocol Port - any IANA value, RFC 6335
 
 |ID|Name|Description|
-|---|---|---|
+|---:|---|---|
 |20|ftp-data|File Transfer Protocol (data)|
 |21|ftp|File Transfer Protocol (control)|
 |22|ssh|Secure Shell Protocol|
@@ -255,7 +245,16 @@ Service Name and Transport Protocol Port - any IANA value, RFC 6335
 |25|smtp|Simple Mail Transfer Protocol|
 |80|http|Hypertext Transport Protocol|
 |443|https|HTTP over TLS|
-## 3.4 Primitive Types
+### 3.2.19 openc2
+A target used to query Actuator for its supported capabilities
+
+| |Choice| | |
+|---:|---|---|---|
+|**ID**|**Name**|**Type**|**Description**|
+|1|actions|Null|query: Results = JSON array of supported action verbs|
+|2|schema|Null|query: Results = JADN syntax of supported commands|
+|3|actuator_groups|Null|query: Results = JSON array of actuator group names|
+## 3.3 Primitive Types
 |Name|Type|Description|
 |---|---|---|
 |command-id|String|Uniquely identifies a particular command - TBD syntax|

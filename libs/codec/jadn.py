@@ -139,6 +139,29 @@ def jadn_check(schema):
                     print("Tag collision", t[TNAME], len(t[FIELDS]), "items,", len(tags), "unique tags")
     return schema
 
+def topo_sort(items):
+    """
+    Topological sort with locality
+    Sorts a list of (item: (dependencies)) pairs so that 1) all dependency items are listed before the parent item,
+    and 2) dependencies are listed in the given order and as close to the parent as possible.
+    Returns the sorted list of items and a list of root items.  A single root indicates a fully-connected hierarchy;
+    multiple roots indicate disconnected items or hierarchies, and no roots indicate a dependency cycle.
+    """
+    def walk_tree(item):
+        for i in deps[item]:
+            if i not in out:
+                walk_tree(i)
+                out.append(i)
+
+    out = []
+    deps = {i[0]:i[1] for i in items}
+    roots = {i[0] for i in items} - set().union(*[i[1] for i in items])
+    for item in roots:
+        walk_tree(item)
+        out.append(item)
+    out = out if out else [i[0] for i in items]     # if cycle detected, don't sort
+    return out, roots
+
 
 def build_jadn_deps(schema):
     items = []
@@ -158,9 +181,11 @@ def build_jadn_deps(schema):
 
 def jadn_analyze(schema):
     items = build_jadn_deps(schema)
+#    out, roots = topo_sort(items)
     types = {i[0] for i in items}
     refs = set().union(*[i[1] for i in items])
-    print("  module:", schema["meta"]["module"])
+    version = ", " + schema['meta']['version'] if 'version' in schema['meta'] else ''
+    print("  module:", schema["meta"]["module"] + version)
     print("  unreferenced:", [str(k) for k in types - refs])
     print("  undefined:", [str(k) for k in refs - types])
     print("  cycles:", [])

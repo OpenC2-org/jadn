@@ -60,7 +60,7 @@ class OpenC2(unittest.TestCase):
     def test02_query_actions(self):
         cmd_api = {"action": "query", "target": {"openc2": {"actions":""}}}
         rsp_api = {
-            "status": "OK",
+            "status": 200,
             "results": {
                 "strings":
                     ["query", "report", "notify", "start", "stop", "set", "delete", "update",

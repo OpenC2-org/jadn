@@ -20,24 +20,24 @@ schema_basic = {                # JADN schema for datatypes used in Basic Types 
             [1, "type1", "String", [], ""],
             [4, "type2", "Boolean", [], ""],
             [7, "type3", "Integer", [], ""]]
-         ],
+        ],
         ["t_enum", "Enumerated", [], "", [
             [1, "first", ""],
             [15, "extra", ""],
             [8, "Chunk", ""]]
-         ],
+        ],
         ["t_map", "Map", [], "", [
             [2, "red", "Integer", [], ""],
-            [4, "green", "Integer", ["?"], ""],
+            [4, "green", "Integer", ["[0"], ""],
             [6, "blue", "Integer", [], ""],
-            [9, "alpha", "Integer", ["?"], ""]]
-         ],
+            [9, "alpha", "Integer", ["[0"], ""]]
+        ],
         ["t_rec", "Record", [], "", [
             [1, "red", "Integer", [], ""],
-            [2, "green", "Integer", ["?"], ""],
+            [2, "green", "Integer", ["[0"], ""],
             [3, "blue", "Integer", [], ""],
-            [4, "alpha", "Integer", ["?"], ""]]
-         ]
+            [4, "alpha", "Integer", ["[0"], ""]]
+        ]
     ]}
 
 
@@ -591,7 +591,7 @@ schema_selectors = {                # JADN schema for selector tests
     "types": [
         ["t_attribute", "Record", [], "", [
             [1, "type", "String", [], ""],
-            [2, "value", "", ["{type"], ""]]
+            [2, "value", "", ["&type"], ""]]
         ],
         ["t_property_implicit_primitive", "Record", [], "", [
             [1, "foo", "String", [], ""],
@@ -620,9 +620,9 @@ schema_selectors = {                # JADN schema for selector tests
             [6, "color", "Colors", [], ""]]
         ],
         ["Animals", "Map", [], "", [
-            [3, "cat", "String", ["?"], ""],
-            [4, "dog", "Integer", ["?"], ""],
-            [5, "rat", "Rattrs", ["?"], ""]]
+            [3, "cat", "String", ["[0"], ""],
+            [4, "dog", "Integer", ["[0"], ""],
+            [5, "rat", "Rattrs", ["[0"], ""]]
         ],
         ["Colors", "Enumerated", [], "", [
             [2, "red", ""],
@@ -638,7 +638,6 @@ schema_selectors = {                # JADN schema for selector tests
 
 class Selectors(unittest.TestCase):         # TODO: bad schema - verify * field has only Choice type
                                             # TODO: add test cases to decode multiple values for Choice (bad)
-
     def setUp(self):
         jadn_check(schema_selectors)
         self.tc = Codec(schema_selectors)
@@ -758,6 +757,95 @@ class Selectors(unittest.TestCase):         # TODO: bad schema - verify * field 
             self.tc.encode("t_property_implicit_primitive", self.pip_bad2_api)
         with self.assertRaises(ValueError):
             self.tc.decode("t_property_implicit_primitive", self.pip_bad2_min)
+
+
+schema_listfield = {                # JADN schema for fields with cardinality > 1 (e.g., list of x)
+    "meta": {"module": "unittests-ListField"},
+    "types": [
+        ["t_array", "ArrayOf", ["#String"], ""],
+        ["t_opt_list", "Record", [], "", [
+            [1, "string", "String", [], ""],
+            [2, "list", "t_array", ["[0"], ""]]
+        ],
+        ["t_list_two", "Record", [], "", [
+            [1, "string", "String", [], ""],
+            [2, "list", "String", ["]2"], ""]]
+        ],
+        ["t_list_opt_two", "Record", [], "", [
+            [1, "string", "String", [], ""],
+            [2, "list", "String", ["[0", "]2"], ""]]
+        ],
+        ["t_list_range", "Record", [], "", [
+            [1, "string", "String", [], ""],
+            [2, "list", "String", ["[2","]3"], ""]]
+        ],
+        ["t_list_unbound", "Record", [], "", [
+            [1, "string", "String", [], ""],
+            [2, "list", "String", ["]0"], ""]]
+        ]]}
+
+class ListField(unittest.TestCase):      # TODO: arrayOf(rec,map,array,arrayof,choice), array(), map(), rec()
+
+    def setUp(self):
+        jadn_check(schema_listfield)
+        self.tc = Codec(schema_listfield)
+
+    L1a = {"string": "cat"}                     # Cardinality 0..n field doesn't omit empty list.  Use ArrayOf type.
+    L2a = {"string": "cat", "list": []}         # List fields SHOULD have minimum cardinality 1 to prevent ambiguity.
+    L3a = {"string": "cat", "list": ["red"]}
+    L4a = {"string": "cat", "list": ["red", "green"]}
+    L5a = {"string": "cat", "list": ["red", "green", "blue"]}
+
+    def test_list_verbose(self):
+        self.tc.set_mode(True, True)
+        self.assertDictEqual(self.tc.encode("t_opt_list", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_opt_list", self.L1a), self.L1a)
+
+        with self.assertRaises(ValueError):
+            self.tc.encode("t_list_two", self.L1a)
+        with self.assertRaises(ValueError):
+            self.tc.decode("t_list_two", self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_two", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_two", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_two", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_two", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_two", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_two", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_two", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_two", self.L5a), self.L5a)
+
+        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L5a), self.L5a)
+
+        self.assertDictEqual(self.tc.encode("t_list_range", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_list_range", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_range", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_range", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_range", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_range", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_range", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_range", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_range", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_range", self.L5a), self.L5a)
+
+        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L5a), self.L5a)
 
 
 class Bounds(unittest.TestCase):        # TODO: check max and min string length, integer values, array sizes
