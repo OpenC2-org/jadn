@@ -44,10 +44,11 @@ And the JADN version is:
 
 Although JADN can be edited directly, it is also possible to document
 data structures using an interface definition language (IDL) such as Thrift
-[[1](#ref1)] or Protobuf [[2](#ref2)], and translate the definitions into JADN format.
-One advantage of JADN is that an IDL parser is not needed in order to use it.
-JADN is designed for machine consumption, and applications can read a JADN schema using
-nothing but the standard JSON loader present in most programming languages.
+[[1](#ref1)] or Protobuf [[2](#ref2)], or in table format, and translate the
+definitions into JADN format. One advantage of JADN is that an IDL parser is
+not needed in order to use it.
+JADN is designed for machine consumption, and applications can read a JADN schema
+using nothing but the standard JSON loader present in most programming languages.
 
 A JADN file consists of meta-information and a list of datatype definitions in a fixed
 format.  As shown in the example, each type definition is a list containing
