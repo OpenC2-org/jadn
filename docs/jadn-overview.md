@@ -1,4 +1,4 @@
-# JADN
+# JADN Overview
 
 JSON Abstract Data Notation (JADN) is a language-neutral, platform-neutral,
 and format-neutral mechanism for serializing structured data.
@@ -22,6 +22,15 @@ The Thrift equivalent is:
         3: optional string email
     }
 
+The table represenation is:
+### Person
+|    |**Record**|        |     |   |
+|-----:|--------|--------|----:|---|
+|**ID**|**Name**|**Type**|**#**|**Description**|
+|    1 | name   | String |   1 |   |
+|    2 | id     | Integer|   1 |   |
+|    3 | email  | String | 0..1|   |
+
 And the JADN version is:
 
     {   "meta": {
@@ -34,13 +43,13 @@ And the JADN version is:
     ]]}
 
 Although JADN can be edited directly, it is also possible to document
-data structures using an interface definition language (IDL) such as
-Thrift [[1](#ref1)] or Protobuf [[2](#ref2)], and translate the definitions into JADN format.
-The advantage of JADN is that an IDL parser is not needed in order to use it.
-JADN is designed for machine consumption and is read using the standard
-JSON loader present in most programming languages.
+data structures using an interface definition language (IDL) such as Thrift
+[[1](#ref1)] or Protobuf [[2](#ref2)], and translate the definitions into JADN format.
+One advantage of JADN is that an IDL parser is not needed in order to use it.
+JADN is designed for machine consumption, and applications can read a JADN schema using
+nothing but the standard JSON loader present in most programming languages.
 
-A JADN file contains a list of datatype definitions in a fixed
+A JADN file consists of meta-information and a list of datatype definitions in a fixed
 format.  As shown in the example, each type definition is a list containing
 four elements, plus for structured types, a list of field definitions.
 
@@ -96,8 +105,8 @@ Record     | An ordered list of named fields, e.g. a message, record, structure,
 ## Options
 
 The Type Options and Field Options items are a list of strings where each string is an option.
-The first character is the type ID; the remaining characters are the value.
-The option string is converted into a Name: Value pair before use, where the Name corresponds to the type ID
+The first character is the option ID; the remaining characters are the value.
+The option string is converted into a Name: Value pair before use, where the Name corresponds to the ID
 and the Value has the type shown in the tables.
 
 ### Type Options
@@ -120,15 +129,18 @@ and the Value has the type shown in the tables.
   0x2f | etype   |  /  | string  | serializer-specific encoding type, e.g., u8, i32, hex, base64
   0x21 | default |  !  | string  | default value for this field (coerced to field type)
 
-In the example above, the field options list [ "[0" ] contains one option.
+In the example above, the field options list for the email field [ "[0" ] contains one option.
 The option ID is "[" (min) and value is "0", indicating that the minimum cardinality of the
 email field is 0, i.e., that field is optional.  
 
 ## Serialization
-Thrift and Protobuf each define a specific format for serialized data.  JADN is format-independent,
-which allows messages to be serialized using a format most suited to the application.
+Thrift and Protobuf each define a specific format for serialized data.  JADN is an abstract,
+format-independent language for defining datatypes.  Similar to the way HTML separates content
+from appearance using CSS, JADN separates data structure from message format using encoding
+rules, which allows messages to be serialized using the format most suited to the application
+and its operating environment.
 
-A JADN definition of a type called Test1 consisting of a single integer named "a" would be:
+For example, a JADN definition of a type called Test1 consisting of a single integer named "a" would be:
 
     ["Test1", "Record", [], "", [
         [1, "a", "Integer", [], ""]]
@@ -147,8 +159,10 @@ or in minified JSON format as the five byte string:
 
     [150]
 
-A codec (encoder/decoder) serializes and de-serializes JADN message instances using the
-selected serialization format.
+A codec (encoder/decoder) is an implementation of the encoding rules used to serialize and de-serialize
+JADN message instances in a specified format.  Although a JADN schema could be compiled into static
+source code for a schema-specific codec, it is designed to be used as "byte-code" interpreted
+dynamically by a schema-independent codec library.
 
 ## References
 
