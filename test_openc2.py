@@ -87,7 +87,7 @@ class OpenC2(unittest.TestCase):
                     [3, "actuator", "Actuator", ["?"], ""],
                     [4, "modifiers", "Modifiers", ["?"], ""]]]]}
         rsp_api = {
-            "status": "OK",
+            "status": 200,
             "results": {"string": six.text_type(json.dumps(schema))}}
 
         self.tc.set_mode(True, True)        # API / Verbose (dict/name)
@@ -177,7 +177,7 @@ class OpenC2(unittest.TestCase):
                     "dst_port": {"protocol": "https"}
                 }},
             "actuator": {
-                "network_firewall": {"asset_id": "30"}},
+                "firewall": {"asset_id": "30"}},
             "modifiers": {
                 "command_id": "pf17_8675309",
                 "context": "91",
@@ -191,7 +191,7 @@ class OpenC2(unittest.TestCase):
             "target.ip_connection.src_port.number": 10996,
             "target.ip_connection.dst_addr.ipv4": "1.2.3.5",
             "target.ip_connection.dst_port.protocol": "https",
-            "actuator.network_firewall.asset_id": "30",
+            "actuator.firewall.asset_id": "30",
             "modifiers.command_id": "pf17_8675309",
             "modifiers.context": "91",
             "modifiers.start_time": "2016-11-25T08:10:31-04:00",
@@ -206,7 +206,7 @@ class OpenC2(unittest.TestCase):
                 "3": {"1": "1.2.3.5"},
                 "4": {"2": 443},
                 "5": 6}},
-            "3": {"14": {"2": "30"}},
+            "3": {"2": {"2": "30"}},
             "4": {
                 "1": "91",
                 "2": "2016-11-25T08:10:31-04:00",
@@ -221,7 +221,7 @@ class OpenC2(unittest.TestCase):
                 {"ipv4": "1.2.3.5"},
                 {"protocol": "https"},
                 "TCP"]},
-            {"network_firewall": [None, "30"]},
+            {"firewall": [None, "30"]},
             {"context": "91",
             "start_time": "2016-11-25T08:10:31-04:00",
             "duration": "PT2M30S",
@@ -234,7 +234,7 @@ class OpenC2(unittest.TestCase):
                 {"1": "1.2.3.5"},
                 {"2": 443},
                 6]},
-            {"14": [None, "30"]},
+            {"2": [None, "30"]},
             {"1": "91",
              "2": "2016-11-25T08:10:31-04:00",
              "4": "PT2M30S",
@@ -301,7 +301,7 @@ class OpenC2(unittest.TestCase):
                     "name": "VirusBeGone",
                     "vendor": "McAfmantec"}},
             "actuator": {
-                "process_remediation_service": {
+                "firewall": {
                     "actuator_id": "dns://host03274.example.org"}},
             "modifiers": {
                 "command_id": "474074afb389",
@@ -313,7 +313,7 @@ class OpenC2(unittest.TestCase):
             "action": "update",
             "target.software.vendor": "McAfmantec",
             "target.software.name": "VirusBeGone",
-            "actuator.process_remediation_service.actuator_id": "dns://host03274.example.org",
+            "actuator.firewall.actuator_id": "dns://host03274.example.org",
             "modifiers.command_id": "474074afb389",
             "modifiers.command_src": "dns://orch.example.org",
             "modifiers.response": "ack",
@@ -329,7 +329,7 @@ class OpenC2(unittest.TestCase):
         # -- Response
 
         rsp_api = {
-            "status": "Processing",
+            "status": 101,
             "statusText": "Updating McAfmantec VirusBeGone ...",
             "response_src": "dns://orch.example.org",
             "command_ref": "474074afb389"}
@@ -350,7 +350,7 @@ class OpenC2(unittest.TestCase):
                 }
             },
             "actuator": {
-                "network_firewall": {"actuator_id": "dns://host03274.example.org"}}
+                "firewall": {"actuator_id": "dns://host03274.example.org"}}
         }
         self.tc.set_mode(True, True)    # API / Verbose (dict/name)
         self.assertEqual(self.tc.encode("OpenC2Command", cmd_api), cmd_api)
@@ -367,7 +367,7 @@ class OpenC2(unittest.TestCase):
                 "any": {"actuator_id": "https://router7319.example.org"}}
         }
         rsp_api = {
-            "status": "OK",
+            "status": 200,
             "results": {
                 "comms": {
                     "serialization": ["JSON", "JSON-min", "XML", "Protobuf"],
@@ -433,7 +433,7 @@ class OpenC2(unittest.TestCase):
                     "name": "rm -rf /*.*"
                 }},
             "actuator": {
-                "endpoint": {"actuator_id": "dns://i3494.hosts.example.com"}
+                "firewall": {"actuator_id": "dns://i3494.hosts.example.com"}
             },
             "modifiers": {
                 "method": {"stop": "graceful"}
@@ -452,7 +452,7 @@ class OpenC2(unittest.TestCase):
                 "process": {
                     "creator_user": {"user_id": "jjadmin"}}},
             "actuator": {
-                "endpoint": {"actuator_id": "dns://i3494.hosts.example.com"}
+                "firewall": {"actuator_id": "dns://i3494.hosts.example.com"}
             },
             "modifiers": {
                 "method": {"stop": "graceful"}
@@ -518,6 +518,7 @@ class OpenC2(unittest.TestCase):
         self.assertEqual(self.tc.decode("OpenC2Command", cmd_api), cmd_api)
         self._write_examples("t15_report_artifact", [cmd_api, None, None, None])
 
+    """
     def test16_set_registry(self):
         cmd_api = {
             "action": "set",
@@ -552,6 +553,7 @@ class OpenC2(unittest.TestCase):
         self.assertEqual(self.tc.encode("OpenC2Command", cmd_api), cmd_api)
         self.assertEqual(self.tc.decode("OpenC2Command", cmd_api), cmd_api)
         self._write_examples("t17_investigate_x509_certificate", [cmd_api, None, None, None])
+    """
 
     def test18_allow_directory(self):
         cmd_api = {

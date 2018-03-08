@@ -88,12 +88,14 @@ class Codec:
                 td = ts[S_TDEF]
                 tn = "%s(%s)" % (td[TNAME], td[TTYPE]) if td else "Primitive"
                 raise TypeError("%s: %r is not %s" % (tn, val, vtype))
-            op = ts[S_TOPT]
-            if vtype in (list, type('')):
-                if len(val) < op['min']:
-                    raise ValueError("%s: length %s < minimum %s" % td[TNAME], len(val), omin)
-                if len(val) > op['max']:
-                    raise ValueError("%s: length %s > maximum %s" % td[TNAME], len(val), omax)
+
+    def _check_field_len(self, ts, val):
+        op = ts[S_TOPT]
+        if vtype in (list, type('')):
+            if len(val) < op['emin']:
+                raise ValueError("%s: length %s < minimum %s" % td[TNAME], len(val), omin)
+            if len(val) > op['emax']:
+                raise ValueError("%s: length %s > maximum %s" % td[TNAME], len(val), omax)
 
     def set_mode(self, verbose_rec=False, verbose_str=False):
         def symf(fld):              # Field entries
@@ -102,8 +104,15 @@ class Codec:
                 fopts_s2d(fld[FOPTS]) if len(fld) > FOPTS else None,  # S_FOPT: Field options (dict)
                 []                  # S_FNAMES: Possible field names returned from Choice type
             ]
+            fo = fs[S_FOPT]
+            emax = None
             if fld[FTYPE] == list:
-                pass    # TODO: set min and max
+                emax = self.max_array
+            elif fld[FTYPE] == type(''):
+                emax = self.max_string
+            emax = fo['max'] if 'max' in fo and fo['max'] > 0 else emax
+            emin = fo['min'] if 'min' in fo else 1
+            fo.update({'emin': emin, 'emax': emax})
             return fs
 
         def sym(t):                 # Build symbol table based on encoding modes
@@ -152,7 +161,8 @@ def _bad_value(ts, val, fld=None):
     if fld is not None:
         raise ValueError("%s(%s): missing required field '%s': %s" % (td[TNAME], td[TTYPE], fld[FNAME], val))
     else:
-        raise ValueError("%s(%s): bad value: %s" % (td[TNAME], td[TTYPE], val))
+        v = next(iter(val)) if type(val) == dict else val
+        raise ValueError("%s(%s): bad value: %s" % (td[TNAME], td[TTYPE], v))
 
 
 def _extra_value(ts, val, fld):
