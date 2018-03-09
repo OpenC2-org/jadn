@@ -762,24 +762,24 @@ class Selectors(unittest.TestCase):         # TODO: bad schema - verify * field 
 schema_listfield = {                # JADN schema for fields with cardinality > 1 (e.g., list of x)
     "meta": {"module": "unittests-ListField"},
     "types": [
-        ["t_array", "ArrayOf", ["#String"], ""],
+        ["t_array", "ArrayOf", ["#String", "]2"], ""],
         ["t_opt_list", "Record", [], "", [
             [1, "string", "String", [], ""],
             [2, "list", "t_array", ["[0"], ""]]
         ],
-        ["t_list_two", "Record", [], "", [
+        ["t_list_1_2", "Record", [], "", [
             [1, "string", "String", [], ""],
             [2, "list", "String", ["]2"], ""]]
         ],
-        ["t_list_opt_two", "Record", [], "", [
+        ["t_list_0_2", "Record", [], "", [
             [1, "string", "String", [], ""],
             [2, "list", "String", ["[0", "]2"], ""]]
         ],
-        ["t_list_range", "Record", [], "", [
+        ["t_list_2_3", "Record", [], "", [
             [1, "string", "String", [], ""],
             [2, "list", "String", ["[2","]3"], ""]]
         ],
-        ["t_list_unbound", "Record", [], "", [
+        ["t_list_1_n", "Record", [], "", [
             [1, "string", "String", [], ""],
             [2, "list", "String", ["]0"], ""]]
         ]]}
@@ -796,56 +796,72 @@ class ListField(unittest.TestCase):      # TODO: arrayOf(rec,map,array,arrayof,c
     L4a = {"string": "cat", "list": ["red", "green"]}
     L5a = {"string": "cat", "list": ["red", "green", "blue"]}
 
-    def test_list_verbose(self):
+    def test_opt_list_verbose(self):
         self.tc.set_mode(True, True)
         self.assertDictEqual(self.tc.encode("t_opt_list", self.L1a), self.L1a)
         self.assertDictEqual(self.tc.decode("t_opt_list", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_opt_list", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_opt_list", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_opt_list", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_opt_list", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_opt_list", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_opt_list", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_opt_list", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_opt_list", self.L5a), self.L5a)
 
+    def test_list_1_2_verbose(self):
+        self.tc.set_mode(True, True)
         with self.assertRaises(ValueError):
             self.tc.encode("t_list_two", self.L1a)
         with self.assertRaises(ValueError):
             self.tc.decode("t_list_two", self.L1a)
-        self.assertDictEqual(self.tc.encode("t_list_two", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.decode("t_list_two", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.encode("t_list_two", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.decode("t_list_two", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.encode("t_list_two", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.decode("t_list_two", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.encode("t_list_two", self.L5a), self.L5a)
-        self.assertDictEqual(self.tc.decode("t_list_two", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.encode("t_list_1_2", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_1_2", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_1_2", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_1_2", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_1_2", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_1_2", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_1_2", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_1_2", self.L5a), self.L5a)
 
-        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L1a), self.L1a)
-        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L1a), self.L1a)
-        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.encode("t_list_opt_two", self.L5a), self.L5a)
-        self.assertDictEqual(self.tc.decode("t_list_opt_two", self.L5a), self.L5a)
+    def test_list_0_2_verbose(self):
+        self.tc.set_mode(True, True)
+        self.assertDictEqual(self.tc.encode("t_list_0_2", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_list_0_2", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_0_2", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_0_2", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_0_2", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_0_2", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_0_2", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_0_2", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_0_2", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_0_2", self.L5a), self.L5a)
 
-        self.assertDictEqual(self.tc.encode("t_list_range", self.L1a), self.L1a)
-        self.assertDictEqual(self.tc.decode("t_list_range", self.L1a), self.L1a)
-        self.assertDictEqual(self.tc.encode("t_list_range", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.decode("t_list_range", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.encode("t_list_range", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.decode("t_list_range", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.encode("t_list_range", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.decode("t_list_range", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.encode("t_list_range", self.L5a), self.L5a)
-        self.assertDictEqual(self.tc.decode("t_list_range", self.L5a), self.L5a)
+    def test_list_2_3_verbose(self):
+        self.tc.set_mode(True, True)
+        self.assertDictEqual(self.tc.encode("t_list_2_3", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_list_2_3", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_2_3", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_2_3", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_2_3", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_2_3", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_2_3", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_2_3", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_2_3", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_2_3", self.L5a), self.L5a)
 
-        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L1a), self.L1a)
-        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L1a), self.L1a)
-        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L2a), self.L2a)
-        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L3a), self.L3a)
-        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L4a), self.L4a)
-        self.assertDictEqual(self.tc.encode("t_list_unbound", self.L5a), self.L5a)
-        self.assertDictEqual(self.tc.decode("t_list_unbound", self.L5a), self.L5a)
+    def test_list_1_n_verbose(self):
+        self.tc.set_mode(True, True)
+        self.assertDictEqual(self.tc.encode("t_list_1_n", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.decode("t_list_1_n", self.L1a), self.L1a)
+        self.assertDictEqual(self.tc.encode("t_list_1_n", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.decode("t_list_1_n", self.L2a), self.L2a)
+        self.assertDictEqual(self.tc.encode("t_list_1_n", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.decode("t_list_1_n", self.L3a), self.L3a)
+        self.assertDictEqual(self.tc.encode("t_list_1_n", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.decode("t_list_1_n", self.L4a), self.L4a)
+        self.assertDictEqual(self.tc.encode("t_list_1_n", self.L5a), self.L5a)
+        self.assertDictEqual(self.tc.decode("t_list_1_n", self.L5a), self.L5a)
 
 
 class Bounds(unittest.TestCase):        # TODO: check max and min string length, integer values, array sizes
